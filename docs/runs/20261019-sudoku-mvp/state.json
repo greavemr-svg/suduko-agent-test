@@ -2,7 +2,7 @@
   "run_id": "20261019-sudoku-mvp",
   "idea": "A simple Android Sudoku app: generate a new easy puzzle, let the player fill in cells, and highlight mistakes.",
   "status": "in_progress",
-  "stage": "audit",
+  "stage": "G5",
   "bootstrap": true,
   "created_at": "2026-10-19T05:35:53Z",
   "epic_issue": 5,
@@ -387,7 +387,7 @@
     "url": "https://github.com/greavemr-svg/suduko-agent-test/pull/22"
   },
   "counters": {
-    "agent_invocations": 77,
+    "agent_invocations": 79,
     "plan_attempts": 2,
     "design_attempts": 2,
     "invocation_cap": 80,
@@ -561,7 +561,11 @@
     "2026-10-19T14:23:08Z auditor: STOPPED at 40-turn limit, no audit.md written",
     "2026-10-19T14:23:08Z auditor (retry, write-first brief): invoked",
     "2026-10-19T14:27:53Z auditor retry: DONE - audit.md, 33 flags (High 3: F-01 heredoc writes, F-02 tester reports missing on GitHub for T1-T5 final heads, F-03 Scanner NOT RUN w/o owner decision; Medium 8; Low 13; Info 9). Two known wording errors in audit.md (T4 CR count, F-28 timing) left as-is (auditor-owned file)",
-    "2026-10-19T14:27:53Z release (prepare follow-up: tick audit box + flags in PR #22 body): invoked"
+    "2026-10-19T14:27:53Z release (prepare follow-up: tick audit box + flags in PR #22 body): invoked",
+    "2026-10-19T14:29:00Z release PR-body follow-up: BLOCKED - Write outside project denied by restrict-writes hook (orchestrator instruction error); agent correctly did not fall back to heredocs. Re-routing with option (b): write docs/releases/v0.1.0-pr.md (allowed path), commit, PATCH from it",
+    "2026-10-19T14:29:00Z release PR-body follow-up (option b): invoked",
+    "2026-10-19T14:33:03Z release PR-body follow-up: DONE - b0a43ad, PR #22 body PATCHed, 0 unticked boxes, CI build-test + governance pass",
+    "2026-10-19T14:33:03Z gatekeeper G5: invoked (state committed first so G5 comment is newer than last commit)"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
