@@ -2,7 +2,6 @@ package io.github.greavemrsvg.sudoku.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,14 +18,13 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.github.greavemrsvg.sudoku.domain.BOX_SIZE
 import io.github.greavemrsvg.sudoku.domain.EMPTY
 import io.github.greavemrsvg.sudoku.ui.theme.selectedCellTint
@@ -36,8 +34,6 @@ private val ThickLine = 2.dp
 private val SelectedBorder = 3.dp
 private val MistakeBarHeight = 3.dp
 private val MistakeBarBottomPadding = 4.dp
-private const val DIGIT_TEXT_SP = 22f
-private const val MAX_DIGIT_FRACTION_OF_CELL = 0.6f
 private const val MISTAKE_BAR_WIDTH_FRACTION = 0.5f
 
 /** Test tag of the cell at [row], [column] (0-based). */
@@ -53,13 +49,15 @@ fun mistakeTag(
 ) = "mistake_${row}_$column"
 
 /**
- * One grid cell. The caller gives it an equal share of the row width and the cell keeps itself square.
+ * One grid cell. [digitSize] is the digit size, already capped to the cell size by [SudokuGrid].
+ * The caller gives it an equal share of the row width and the cell keeps itself square.
  * Cell and box borders are drawn inside the cell bounds, so they never change the cell size.
  */
 @Composable
 fun SudokuCell(
     cell: CellUi,
     onClick: () -> Unit,
+    digitSize: TextUnit,
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -73,7 +71,7 @@ fun SudokuCell(
             cell.isGiven -> colors.onSurface
             else -> colors.primary
         }
-    BoxWithConstraints(
+    Box(
         modifier =
             modifier
                 .aspectRatio(1f)
@@ -84,19 +82,12 @@ fun SudokuCell(
         contentAlignment = Alignment.Center,
     ) {
         if (cell.digit != EMPTY) {
-            // The digit grows with the system font size, but never beyond a fraction of the cell,
-            // so it cannot overflow at the largest font setting.
-            val density = LocalDensity.current
-            val fontSize =
-                with(density) {
-                    minOf(DIGIT_TEXT_SP.sp.toPx(), constraints.maxHeight * MAX_DIGIT_FRACTION_OF_CELL).toSp()
-                }
             BasicText(
                 text = cell.digit.toString(),
                 style =
                     TextStyle(
                         color = textColor,
-                        fontSize = fontSize,
+                        fontSize = digitSize,
                         fontWeight = if (cell.isGiven) FontWeight.Bold else FontWeight.Normal,
                         textAlign = TextAlign.Center,
                     ),
