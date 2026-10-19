@@ -2,27 +2,151 @@
   "run_id": "20261019-sudoku-mvp",
   "idea": "A simple Android Sudoku app: generate a new easy puzzle, let the player fill in cells, and highlight mistakes.",
   "status": "in_progress",
-  "stage": "design",
+  "stage": "build",
   "bootstrap": true,
   "created_at": "2026-10-19T05:35:53Z",
   "epic_issue": 5,
   "feature_branch": "feature/20261019-sudoku-mvp",
   "artifacts": {
     "spec": "docs/specs/20261019-sudoku-mvp.md",
-    "design": "",
-    "adrs": [],
+    "design": "docs/design/20261019-sudoku-mvp.md",
+    "adrs": [
+      "docs/adr/0001-technology-stack.md",
+      "docs/adr/0002-saved-game-format.md",
+      "docs/adr/0003-jvm-integration-tests-with-robolectric.md"
+    ],
     "audit": ""
   },
   "gates": {
-    "G1": {"result": "PASS", "at": "2026-10-19T06:47:36Z", "supersedes": "PASS 2026-10-19T06:28:50Z (pre-amendment)", "blocking": [], "notes": "All G1.1-G1.7 + DoR evidenced; consistent with owner answers. DoR.10 (<=8 tasks) to be confirmed at G2."},
-    "spec_approval": {"decision": "Approve spec", "verbatim": "Gate A (re-approval): do you approve the amended spec docs/specs/20261019-sudoku-mvp.md, with the reworded accessibility rule and the new assumption A10?=\"Approve spec\"", "at": "2026-10-19T06:53:26Z", "by": "owner (greavemr-svg)", "previous": {"verbatim": "Gate A: do you approve the spec docs/specs/20261019-sudoku-mvp.md, including the assumptions A1, A4, A6 and A7?=\"Approve spec\"", "at": "2026-10-19T06:33:08Z", "commit": "9feb05f"}},
-    "G2": null,
-    "stack_approval": null,
+    "G1": {
+      "result": "PASS",
+      "at": "2026-10-19T06:47:36Z",
+      "supersedes": "PASS 2026-10-19T06:28:50Z (pre-amendment)",
+      "blocking": [],
+      "notes": "All G1.1-G1.7 + DoR evidenced; consistent with owner answers. DoR.10 (<=8 tasks) to be confirmed at G2."
+    },
+    "spec_approval": {
+      "decision": "Approve spec",
+      "verbatim": "Gate A (re-approval): do you approve the amended spec docs/specs/20261019-sudoku-mvp.md, with the reworded accessibility rule and the new assumption A10?=\"Approve spec\"",
+      "at": "2026-10-19T06:53:26Z",
+      "by": "owner (greavemr-svg)",
+      "previous": {
+        "verbatim": "Gate A: do you approve the spec docs/specs/20261019-sudoku-mvp.md, including the assumptions A1, A4, A6 and A7?=\"Approve spec\"",
+        "at": "2026-10-19T06:33:08Z",
+        "commit": "9feb05f"
+      }
+    },
+    "G2": {
+      "result": "PASS",
+      "at": "2026-10-19T06:58:54Z",
+      "task_count": 7,
+      "supersedes": "FAIL 2026-10-19T06:54:26Z",
+      "blocking": []
+    },
+    "stack_approval": {
+      "decision": "Approve stack",
+      "verbatim": "Stack checkpoint: do you approve the stack in ADR 0001 (Kotlin + Compose + Gradle, Robolectric, Kover, ktlint, JSON file saving) and the project profile in docs/project.md?=\"Approve stack\"",
+      "at": "2026-10-19T07:00:45Z",
+      "by": "owner (greavemr-svg)"
+    },
     "G4": null,
     "G5": null,
     "release_approval": null
   },
-  "tasks": [],
+  "tasks": [
+    {
+      "n": 1,
+      "title": "Walking skeleton",
+      "issue": 8,
+      "branch": "task/20261019-sudoku-mvp-1-walking-skeleton",
+      "deps": [],
+      "status": "todo",
+      "attempts": 0,
+      "pr": null,
+      "G3": null
+    },
+    {
+      "n": 2,
+      "title": "Domain: grid, puzzle, game state and game rules",
+      "issue": 9,
+      "branch": "task/20261019-sudoku-mvp-2-domain-rules",
+      "deps": [
+        1
+      ],
+      "status": "todo",
+      "attempts": 0,
+      "pr": null,
+      "G3": null
+    },
+    {
+      "n": 3,
+      "title": "Domain: solver and easy-puzzle generator",
+      "issue": 10,
+      "branch": "task/20261019-sudoku-mvp-3-solver-generator",
+      "deps": [
+        2
+      ],
+      "status": "todo",
+      "attempts": 0,
+      "pr": null,
+      "G3": null
+    },
+    {
+      "n": 4,
+      "title": "Game screen: grid, selection, digit pad, Erase, live mistakes",
+      "issue": 11,
+      "branch": "task/20261019-sudoku-mvp-4-game-screen",
+      "deps": [
+        2,
+        3
+      ],
+      "status": "todo",
+      "attempts": 0,
+      "pr": null,
+      "G3": null
+    },
+    {
+      "n": 5,
+      "title": "Solved state, New Game and TalkBack semantics",
+      "issue": 12,
+      "branch": "task/20261019-sudoku-mvp-5-solved-newgame-a11y",
+      "deps": [
+        4
+      ],
+      "status": "todo",
+      "attempts": 0,
+      "pr": null,
+      "G3": null
+    },
+    {
+      "n": 6,
+      "title": "Save format: DTO, codec, validator and file repository",
+      "issue": 13,
+      "branch": "task/20261019-sudoku-mvp-6-save-format",
+      "deps": [
+        2,
+        3
+      ],
+      "status": "todo",
+      "attempts": 0,
+      "pr": null,
+      "G3": null
+    },
+    {
+      "n": 7,
+      "title": "Autosave and restore, relaunch tests, final verification",
+      "issue": 14,
+      "branch": "task/20261019-sudoku-mvp-7-autosave-restore",
+      "deps": [
+        5,
+        6
+      ],
+      "status": "todo",
+      "attempts": 0,
+      "pr": null,
+      "G3": null
+    }
+  ],
   "release": {
     "version": "",
     "pr": null,
@@ -30,8 +154,9 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 9,
-    "plan_attempts": 2
+    "agent_invocations": 12,
+    "plan_attempts": 2,
+    "design_attempts": 2
   },
   "log": [
     "2026-10-19T05:35:53Z orchestrator: run created, bootstrap=true, epic #5, branch feature/20261019-sudoku-mvp",
@@ -56,7 +181,17 @@
     "2026-10-19T06:47:36Z gatekeeper G1 re-check: PASS (no blocking items; amendment testable and matches owner decision)",
     "2026-10-19T06:47:36Z orchestrator: Gate A re-presented for amended spec",
     "2026-10-19T06:53:26Z owner: Gate A re-APPROVED amended spec (\"Approve spec\")",
-    "2026-10-19T06:53:26Z gatekeeper G2: invoked"
+    "2026-10-19T06:53:26Z gatekeeper G2: invoked",
+    "2026-10-19T06:54:26Z gatekeeper G2: FAIL - NFR.touch_target (24dp cell check missing); stale Q1/option (b) text + old approval timestamp",
+    "2026-10-19T06:54:26Z architect attempt 2 (G2 findings): invoked",
+    "2026-10-19T06:57:57Z architect attempt 2: DONE - TouchTargetTest (24dp cells @360dp in T4, 48dp pad/Erase T4, New Game T5), stale Q1 text removed, header timestamp fixed; ADR 0001 context updated",
+    "2026-10-19T06:57:57Z gatekeeper G2 (re-check): invoked",
+    "2026-10-19T06:58:54Z gatekeeper G2 re-check: PASS (7 tasks, no blocking)",
+    "2026-10-19T06:58:54Z orchestrator: stack checkpoint presented to owner",
+    "2026-10-19T07:00:45Z owner: stack checkpoint APPROVED (\"Approve stack\")",
+    "2026-10-19T07:00:45Z architect attempt 3 (set project.md Status APPROVED, ADR 0001 owner approval): invoked",
+    "2026-10-19T07:02:25Z architect: DONE - project.md Status APPROVED, ADR 0001 status updated; design header lines 7,10,345-346 still describe approval as pending (informational only, left unchanged)",
+    "2026-10-19T07:03:02Z orchestrator: created task issues #8-#14 (T1-T7); committing design, ADRs, project.md (APPROVED)"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
