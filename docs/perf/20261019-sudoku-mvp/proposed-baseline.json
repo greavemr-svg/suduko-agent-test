@@ -1,0 +1,16 @@
+{
+  "recorded_at": "2026-10-19T00:00:00Z",
+  "commit": "212365a",
+  "conditions": "JVM metrics: Windows 11 dev machine, JDK 17, 200 seeded puzzles (performance agent). Device metrics: minified benchmark build, API 37 Play emulator, 5 runs (task 7 tester, PR #21). Device numbers not re-run by performance agent.",
+  "metrics": {
+    "cold_start_ms": 722,
+    "cold_start_worst_ms": 1107,
+    "restore_start_ms": 716,
+    "restore_overhead_ms": 100,
+    "generation_mean_ms": 1.178,
+    "generation_p95_ms": 1.531,
+    "generation_max_ms": 76.683,
+    "generation_max_nodes": 1382,
+    "generation_mean_nodes": 906.945
+  }
+}

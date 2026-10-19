@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The saved game holds no personal data, so cloud backup and device transfer
+     are allowed. Only the files directory (the saved game) is included, as in
+     backup_rules.xml. Restored data is validated on load. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="file" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="file" path="." />
+    </device-transfer>
+</data-extraction-rules>

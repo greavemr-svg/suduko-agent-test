@@ -1,0 +1,356 @@
+package io.github.greavemrsvg.sudoku.ui
+
+import io.github.greavemrsvg.sudoku.data.GameSaver
+import io.github.greavemrsvg.sudoku.domain.CELL_COUNT
+import io.github.greavemrsvg.sudoku.domain.EMPTY
+import io.github.greavemrsvg.sudoku.domain.GRID_SIZE
+import io.github.greavemrsvg.sudoku.domain.GameRepository
+import io.github.greavemrsvg.sudoku.domain.GameRules
+import io.github.greavemrsvg.sudoku.domain.GameState
+import io.github.greavemrsvg.sudoku.domain.Grid
+import io.github.greavemrsvg.sudoku.domain.Puzzle
+import io.github.greavemrsvg.sudoku.domain.PuzzleGenerator
+import io.github.greavemrsvg.sudoku.domain.SudokuSolver
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertSame
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import kotlin.random.Random
+
+@Suppress("ktlint:standard:function-naming")
+@OptIn(ExperimentalCoroutinesApi::class)
+class GameViewModelTest {
+    private val seed = 7
+
+    @Before
+    fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
+
+    @After
+    fun tearDown() = Dispatchers.resetMain()
+
+    private class FakeRepository(
+        var stored: GameState? = null,
+    ) : GameRepository {
+        val saved = mutableListOf<GameState>()
+
+        override suspend fun load(): GameState? = stored
+
+        override suspend fun save(state: GameState) {
+            saved += state
+        }
+    }
+
+    private val repository = FakeRepository()
+
+    private fun newVm(
+        dispatcher: CoroutineDispatcher,
+        repo: FakeRepository = repository,
+    ) = GameViewModel(
+        PuzzleGenerator(Random(seed), SudokuSolver()),
+        dispatcher,
+        repo,
+        GameSaver(CoroutineScope(UnconfinedTestDispatcher()), repo),
+    )
+
+    private fun viewModel(repo: FakeRepository = repository) = newVm(UnconfinedTestDispatcher(), repo)
+
+    private fun GameViewModel.ready() = uiState.value as GameUiState.Ready
+
+    private fun GameViewModel.selectedIndexes() = ready().cells.indices.filter { ready().cells[it].isSelected }
+
+    private fun puzzle(): Puzzle = PuzzleGenerator(Random(seed), SudokuSolver()).generate()
+
+    private fun Puzzle.firstOpenIndex() = (0 until CELL_COUNT).first { !isGiven(it) }
+
+    private fun Puzzle.wrongDigitAt(index: Int) = solution.get(index) % GRID_SIZE + 1
+
+    @Test
+    fun AC1_starts_loading_then_shows_generated_puzzle() =
+        runTest {
+            val vm = newVm(StandardTestDispatcher(testScheduler))
+            assertSame(GameUiState.Loading, vm.uiState.value)
+            testScheduler.advanceUntilIdle()
+            val ready = vm.ready()
+            assertEquals(CELL_COUNT, ready.cells.size)
+            assertEquals(puzzle().givens.filledCount, ready.cells.count { it.digit != EMPTY })
+            assertTrue(ready.cells.all { it.isGiven == (it.digit != EMPTY) })
+            assertFalse(ready.isSolved)
+        }
+
+    @Test
+    fun AC5_tapping_a_cell_selects_it_and_deselects_the_previous_one() {
+        val vm = viewModel()
+        val open = puzzle().firstOpenIndex()
+        vm.onCellTapped(open)
+        assertEquals(listOf(open), vm.selectedIndexes())
+        vm.onCellTapped(open + 1)
+        assertEquals(listOf(open + 1), vm.selectedIndexes())
+    }
+
+    @Test
+    fun AC6_digit_appears_in_selected_cell() {
+        val vm = viewModel()
+        val open = puzzle().firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(5)
+        assertEquals(5, vm.ready().cells[open].digit)
+    }
+
+    @Test
+    fun AC9_wrong_digit_is_a_mistake_and_correct_digit_is_not() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        assertTrue(vm.ready().cells[open].isMistake)
+        vm.onDigit(puzzle.solution.get(open))
+        assertFalse(vm.ready().cells[open].isMistake)
+    }
+
+    @Test
+    fun AC11_erase_clears_entry_and_mistake() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        vm.onErase()
+        val cell = vm.ready().cells[open]
+        assertEquals(EMPTY, cell.digit)
+        assertFalse(cell.isMistake)
+    }
+
+    @Test
+    fun AC8_digit_and_erase_on_a_given_cell_change_nothing() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        val given = (0 until CELL_COUNT).first { puzzle.isGiven(it) }
+        vm.onCellTapped(given)
+        vm.onDigit(puzzle.givens.get(given) % GRID_SIZE + 1)
+        vm.onErase()
+        assertEquals(puzzle.givens.get(given), vm.ready().cells[given].digit)
+    }
+
+    @Test
+    fun input_before_the_puzzle_is_ready_is_ignored() =
+        runTest {
+            val vm = newVm(StandardTestDispatcher(testScheduler))
+            vm.onCellTapped(0)
+            vm.onDigit(1)
+            vm.onErase()
+            assertSame(GameUiState.Loading, vm.uiState.value)
+        }
+
+    private fun GameViewModel.solve(puzzle: Puzzle) {
+        for (i in (0 until CELL_COUNT).filter { !puzzle.isGiven(it) }) {
+            onCellTapped(i)
+            onDigit(puzzle.solution.get(i))
+        }
+    }
+
+    @Test
+    fun AC12_solving_sets_solved_and_then_ignores_input() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        vm.solve(puzzle)
+        assertTrue(vm.ready().isSolved)
+        val before = vm.ready().cells.map { it.digit }
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        vm.onErase()
+        assertEquals(before, vm.ready().cells.map { it.digit })
+        assertTrue(vm.ready().isSolved)
+    }
+
+    @Test
+    fun AC14_new_game_replaces_puzzle_and_resets_entries_selection_and_solved() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        vm.solve(puzzle)
+        vm.onNewGame()
+        val ready = vm.ready()
+        assertFalse(ready.isSolved)
+        assertFalse(ready.isGenerating)
+        assertTrue(ready.cells.none { it.isSelected || it.isMistake })
+        assertTrue(ready.cells.all { it.isGiven == (it.digit != EMPTY) })
+        val oldGivens = (0 until CELL_COUNT).map { puzzle.givens.get(it) }
+        assertTrue(oldGivens != ready.cells.map { it.digit })
+    }
+
+    @Test
+    fun AC14_new_game_is_ignored_while_generating_and_input_waits_for_the_new_puzzle() =
+        runTest {
+            val scheduler = testScheduler
+            val vm = newVm(StandardTestDispatcher(scheduler))
+            scheduler.advanceUntilIdle()
+            val first = vm.ready().cells.map { it.digit }
+            val open =
+                vm
+                    .ready()
+                    .cells.indices
+                    .first { !vm.ready().cells[it].isGiven }
+            vm.onNewGame()
+            assertTrue(vm.ready().isGenerating)
+            vm.onNewGame()
+            vm.onCellTapped(open)
+            vm.onDigit(1)
+            assertEquals(first, vm.ready().cells.map { it.digit })
+            assertTrue(vm.selectedIndexes().isEmpty())
+            scheduler.advanceUntilIdle()
+            assertFalse(vm.ready().isGenerating)
+            assertTrue(first != vm.ready().cells.map { it.digit })
+        }
+
+    @Test
+    fun AC14_new_game_in_progress_clears_entries_mistake_and_selection() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        assertTrue(vm.ready().cells.any { it.isMistake })
+        vm.onNewGame()
+        val ready = vm.ready()
+        assertTrue(ready.cells.none { it.isMistake || it.isSelected })
+        assertTrue(ready.cells.all { it.isGiven == (it.digit != EMPTY) })
+        assertFalse(ready.isSolved)
+        assertTrue((0 until CELL_COUNT).map { puzzle.givens.get(it) } != ready.cells.map { it.digit })
+    }
+
+    @Test
+    fun AC14_repeated_new_games_each_differ_from_the_previous_puzzle() {
+        val vm = viewModel()
+        var previous = vm.ready().cells.map { it.digit }
+        repeat(5) {
+            vm.onNewGame()
+            val next = vm.ready().cells.map { it.digit }
+            assertTrue(previous != next)
+            previous = next
+        }
+    }
+
+    @Test
+    fun new_game_before_the_first_puzzle_is_ready_is_ignored() =
+        runTest {
+            val vm = newVm(StandardTestDispatcher(testScheduler))
+            vm.onNewGame()
+            assertSame(GameUiState.Loading, vm.uiState.value)
+        }
+
+    @Test
+    fun AC14_new_game_regenerates_when_the_first_puzzle_repeats_the_current_one() {
+        val current = puzzle()
+        val other = PuzzleGenerator(Random(seed + 1), SudokuSolver()).generate()
+        val returned = ArrayDeque(listOf(current, other))
+        var calls = 0
+        val result =
+            generateDifferent(current, MAX_DIFFERENT_ATTEMPTS) {
+                calls++
+                returned.removeFirst()
+            }
+        assertEquals(2, calls)
+        assertSame(other, result)
+        assertTrue(result.givens != current.givens)
+    }
+
+    @Test
+    fun AC14_regeneration_stops_after_the_attempt_cap() {
+        val current = puzzle()
+        var calls = 0
+        val result =
+            generateDifferent(current, MAX_DIFFERENT_ATTEMPTS) {
+                calls++
+                current
+            }
+        assertEquals(MAX_DIFFERENT_ATTEMPTS, calls)
+        assertEquals(3, MAX_DIFFERENT_ATTEMPTS)
+        assertSame(current, result)
+    }
+
+    @Test
+    fun AC15_a_saved_game_is_restored_instead_of_generating_a_new_puzzle() {
+        val puzzle = puzzle()
+        val open = puzzle.firstOpenIndex()
+        val saved = GameRules.enterDigit(GameRules.select(GameRules.newGame(puzzle), open), puzzle.wrongDigitAt(open))
+        val repo = FakeRepository(saved)
+        val vm = viewModel(repo)
+        assertEquals(puzzle.wrongDigitAt(open), vm.ready().cells[open].digit)
+        assertTrue(vm.ready().cells[open].isMistake)
+        assertTrue(repo.saved.isEmpty())
+    }
+
+    @Test
+    fun AC16_a_saved_solved_game_is_restored_solved_and_read_only() {
+        val puzzle = puzzle()
+        val entries = Grid(IntArray(CELL_COUNT) { if (puzzle.isGiven(it)) EMPTY else puzzle.solution.get(it) })
+        val vm = viewModel(FakeRepository(GameState(puzzle, entries)))
+        assertTrue(vm.ready().isSolved)
+        val before = vm.ready().cells.map { it.digit }
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        vm.onErase()
+        assertEquals(before, vm.ready().cells.map { it.digit })
+    }
+
+    @Test
+    fun AC18_without_a_save_a_new_puzzle_is_generated_and_saved() {
+        val repo = FakeRepository(null)
+        val vm = viewModel(repo)
+        assertEquals(1, repo.saved.size)
+        assertEquals(puzzle(), repo.saved[0].puzzle)
+        assertFalse(vm.ready().isSolved)
+    }
+
+    @Test
+    fun AC15_entries_erase_and_new_game_are_saved_but_selecting_is_not() {
+        val puzzle = puzzle()
+        val repo = FakeRepository(null)
+        val vm = viewModel(repo)
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        assertEquals(1, repo.saved.size)
+        vm.onDigit(puzzle.solution.get(open))
+        assertEquals(
+            puzzle.solution.get(open),
+            repo.saved
+                .last()
+                .entries
+                .get(open),
+        )
+        vm.onErase()
+        assertEquals(
+            EMPTY,
+            repo.saved
+                .last()
+                .entries
+                .get(open),
+        )
+        val before = repo.saved.size
+        vm.onNewGame()
+        assertEquals(before + 1, repo.saved.size)
+        assertTrue(repo.saved.last().puzzle != puzzle)
+    }
+
+    @Test
+    fun AC16_solving_saves_the_solved_game() {
+        val puzzle = puzzle()
+        val repo = FakeRepository(null)
+        viewModel(repo).solve(puzzle)
+        assertTrue(repo.saved.last().isSolved)
+    }
+}

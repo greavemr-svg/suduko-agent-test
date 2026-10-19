@@ -1,0 +1,23 @@
+{
+  "run_id": "20261019-sudoku-mvp",
+  "commit": "212365a986a5cd9f641745278a6d3d374064a35a",
+  "baseline": "none (docs/perf/baseline.json does not exist)",
+  "jvm_generation": {
+    "source": "performance agent, ran GenerationPerformanceTest on 2026-10-19 at 212365a",
+    "conditions": "Windows 11 dev machine, JDK 17 Temurin, Gradle unit test (JVM, not device), 200 seeds, node budget 20000",
+    "seeds": 200, "nodeBudget": 20000, "maxNodes": 1382, "meanNodes": 906.945,
+    "meanMillis": 1.178, "p95Millis": 1.531, "maxMillis": 76.683
+  },
+  "on_device": {
+    "source": "task 7 tester, PR #21 comment 6267122350, reported 2026-10-19; not re-run by performance agent; values as reported",
+    "conditions": "minified benchmark build, API 37 Play emulator (Medium_Phone_API_37.0), 5 runs each, am start -W / Fully drawn",
+    "first_launch_fully_drawn_ms": {"median": 722, "worst": 1107},
+    "restore_fully_drawn_ms": {"median": 716, "worst": 749},
+    "restore_overhead_ms_median_approx": 100,
+    "digit_tap_feedback": "looked instant (qualitative, not measured)",
+    "gpu_frame_bars": "NOT RUN"
+  },
+  "earlier_dev_report": {
+    "source": "task 3 developer: nodes max 1382 mean 906.9; time mean 0.28 ms max 3.05 ms over 200 seeds (different machine/run, consistent with agent's numbers apart from time)"
+  }
+}
