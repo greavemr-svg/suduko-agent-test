@@ -5,7 +5,7 @@ import android.app.Application
 /** Application class. Creates the [AppContainer] that holds the app-wide objects. */
 open class SudokuApplication : Application() {
     lateinit var container: AppContainer
-        private set
+        protected set
 
     override fun onCreate() {
         super.onCreate()
@@ -13,5 +13,5 @@ open class SudokuApplication : Application() {
     }
 
     /** Overridable so tests can supply a container with seeded randomness. */
-    protected open fun createContainer(): AppContainer = AppContainer()
+    protected open fun createContainer(): AppContainer = AppContainer(filesDir)
 }

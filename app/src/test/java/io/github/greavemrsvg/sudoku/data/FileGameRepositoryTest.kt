@@ -105,9 +105,14 @@ class FileGameRepositoryTest {
     fun AC18_unreadable_file_loads_null() =
         runTest {
             val dir = temp.newFolder()
+            ShadowLog.clear()
             // A directory where the file should be cannot be read as a save.
             assertTrue(saveFile(dir).mkdir())
             assertNull(repository(dir).load())
+            val logs = ShadowLog.getLogs()
+            assertEquals(1, logs.size)
+            assertEquals("Saved game is unreadable or invalid and was discarded", logs[0].msg)
+            assertFalse(saveFile(dir).exists())
         }
 
     @Test

@@ -15,8 +15,13 @@ val signingStoreFile: String? = providers.environmentVariable("SUDOKU_KEYSTORE_F
 val signingStorePassword: String? = providers.environmentVariable("SUDOKU_KEYSTORE_PASSWORD").orNull
 val signingKeyAlias: String? = providers.environmentVariable("SUDOKU_KEY_ALIAS").orNull
 val signingKeyPassword: String? = providers.environmentVariable("SUDOKU_KEY_PASSWORD").orNull
-val hasReleaseSigning =
-    listOf(signingStoreFile, signingStorePassword, signingKeyAlias, signingKeyPassword).all { !it.isNullOrBlank() }
+val signingValues = listOf(signingStoreFile, signingStorePassword, signingKeyAlias, signingKeyPassword)
+val hasReleaseSigning = signingValues.all { !it.isNullOrBlank() }
+// A partial set would silently produce an unsigned release, so refuse it.
+check(hasReleaseSigning || signingValues.none { !it.isNullOrBlank() }) {
+    "Incomplete release signing configuration: set all of SUDOKU_KEYSTORE_FILE, SUDOKU_KEYSTORE_PASSWORD, " +
+        "SUDOKU_KEY_ALIAS and SUDOKU_KEY_PASSWORD, or none of them."
+}
 
 android {
     namespace = "io.github.greavemrsvg.sudoku"

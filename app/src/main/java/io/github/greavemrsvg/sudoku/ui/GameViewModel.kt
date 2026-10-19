@@ -2,8 +2,10 @@ package io.github.greavemrsvg.sudoku.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.greavemrsvg.sudoku.data.GameSaver
 import io.github.greavemrsvg.sudoku.domain.CELL_COUNT
 import io.github.greavemrsvg.sudoku.domain.GRID_SIZE
+import io.github.greavemrsvg.sudoku.domain.GameRepository
 import io.github.greavemrsvg.sudoku.domain.GameRules
 import io.github.greavemrsvg.sudoku.domain.GameState
 import io.github.greavemrsvg.sudoku.domain.Puzzle
@@ -37,12 +39,15 @@ internal fun generateDifferent(
 }
 
 /**
- * Holds the current game in memory (persistence is added in a later task) and exposes it as
- * [GameUiState]. All rules live in the domain layer. The puzzle is generated on [defaultDispatcher].
+ * Holds the current game and exposes it as [GameUiState]. All rules live in the domain layer.
+ * On start it restores the saved game from [repository], or generates a puzzle on [defaultDispatcher] when there
+ * is none. Every change to the game is queued on [saver].
  */
 class GameViewModel(
     private val generator: PuzzleGenerator,
     private val defaultDispatcher: CoroutineDispatcher,
+    private val repository: GameRepository,
+    private val saver: GameSaver,
 ) : ViewModel() {
     private var game: GameState? = null
     private var isGenerating = false
@@ -51,12 +56,19 @@ class GameViewModel(
 
     init {
         viewModelScope.launch {
-            val puzzle = withContext(defaultDispatcher) { generator.generate() }
-            publish(GameRules.newGame(puzzle))
+            val restored = repository.load()
+            if (restored != null) {
+                publish(restored)
+            } else {
+                val puzzle = withContext(defaultDispatcher) { generator.generate() }
+                val fresh = GameRules.newGame(puzzle)
+                publish(fresh)
+                saver.save(fresh)
+            }
         }
     }
 
-    fun onCellTapped(index: Int) = update { GameRules.select(it, index) }
+    fun onCellTapped(index: Int) = update(persist = false) { GameRules.select(it, index) }
 
     fun onDigit(digit: Int) = update { GameRules.enterDigit(it, digit) }
 
@@ -72,7 +84,7 @@ class GameViewModel(
             try {
                 val puzzle =
                     withContext(defaultDispatcher) { generateDifferent(current.puzzle, MAX_DIFFERENT_ATTEMPTS, generator::generate) }
-                game = GameRules.newGame(puzzle)
+                game = GameRules.newGame(puzzle).also(saver::save)
             } finally {
                 isGenerating = false
                 game?.let { publish(it) }
@@ -80,10 +92,15 @@ class GameViewModel(
         }
     }
 
-    private fun update(transform: (GameState) -> GameState) {
+    private fun update(
+        persist: Boolean = true,
+        transform: (GameState) -> GameState,
+    ) {
         if (isGenerating) return
         val current = game ?: return
-        publish(transform(current))
+        val next = transform(current)
+        publish(next)
+        if (persist && next != current) saver.save(next)
     }
 
     private fun publish(state: GameState) {

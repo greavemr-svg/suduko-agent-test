@@ -28,7 +28,9 @@ class FileGameRepository(
                 try {
                     readBounded()
                 } catch (_: FileNotFoundException) {
-                    return@withContext null
+                    // Also thrown for a directory or a permission-denied file at the path: those are invalid saves.
+                    if (!file.baseFile.exists()) return@withContext null
+                    null
                 } catch (_: IOException) {
                     null
                 }
