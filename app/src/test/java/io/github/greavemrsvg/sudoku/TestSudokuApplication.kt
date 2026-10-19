@@ -17,6 +17,9 @@ import kotlin.random.Random
  * unconfined test dispatcher, so the first puzzle is deterministic and ready without waiting, as do file loads
  * and writes. The save queue (the application scope) runs on a [TestCoroutineScheduler] that [flushSaves]
  * drains, so tests decide exactly when pending saves reach the file. The container saves under [filesDir].
+ * The earlier "later saves not written" symptom was the Windows AtomicFile rename quirk (see task 6), not a
+ * dispatcher effect; on Windows these integration tests pass because conflation turns each launch into a
+ * single write.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class TestSudokuApplication : SudokuApplication() {
