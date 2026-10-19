@@ -220,10 +220,39 @@
       "deps": [
         4
       ],
-      "status": "in_progress",
-      "attempts": 1,
-      "pr": null,
-      "G3": null
+      "status": "done",
+      "attempts": 2,
+      "pr": 19,
+      "G3": {
+        "result": "PASS",
+        "at": "2026-10-19T10:26:57Z",
+        "head": "66902f2",
+        "attempt": 2,
+        "posted_on_pr": true
+      },
+      "tester": {
+        "status": "PASSED",
+        "commit": "none (head 66902f2)",
+        "suite": "117/117",
+        "coverage": "100% (63/63) changed lines",
+        "manual_not_run": [
+          "AC21 TalkBack",
+          "Accessibility Scanner with New Game",
+          "layout at 360dp incl. solved state"
+        ],
+        "note": "carried to T7; no weakening since 0a5d8ea; retry stub tests verified real"
+      },
+      "review": {
+        "verdict": "APPROVE",
+        "head": "66902f2",
+        "findings": "previous 1-6 resolved; 1 Nit",
+        "posted_on_github": "2026-10-19T10:25:42Z"
+      },
+      "follow_ups": [
+        "T7 manual: TalkBack solved announcement + cell reads; banner at largest font on device; Scanner with New Game; 360dp layout incl. solved",
+        "nit: GameScreenStateTest AC14 prefix"
+      ],
+      "merged": "5533d4b9"
     },
     {
       "n": 6,
@@ -234,8 +263,8 @@
         2,
         3
       ],
-      "status": "todo",
-      "attempts": 0,
+      "status": "in_progress",
+      "attempts": 1,
       "pr": null,
       "G3": null
     },
@@ -261,7 +290,7 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 41,
+    "agent_invocations": 49,
     "plan_attempts": 2,
     "design_attempts": 2,
     "invocation_cap": 80,
@@ -365,7 +394,23 @@
     "2026-10-19T09:48:59Z release integrate T4 (PR #18): invoked",
     "2026-10-19T09:55:40Z owner: invocation cap raised to 80 for this run (\"Raise cap to 80 (this run)\")",
     "2026-10-19T09:55:40Z release integrate T4: PR #18 squash-merged as 0a9fc86 into feature; issue #11 closed; feature CI 39232910373 success; T4 done",
-    "2026-10-19T09:55:40Z developer T5 attempt 1: invoked"
+    "2026-10-19T09:55:40Z developer T5 attempt 1: invoked",
+    "2026-10-19T10:05:58Z developer T5 attempt 1: DONE - PR #19 @b39b62a, 109 tests, ~96% changed lines, CI green; New Game in own row (not device-checked); retry-for-different-puzzle capped at 10",
+    "2026-10-19T10:05:58Z tester T5 attempt 1: invoked",
+    "2026-10-19T10:10:15Z tester T5 attempt 1: PASSED - 0a5d8ea (+3 tests), 112/112, 96%, CI green; manual NOT RUN carried to T7; AC14 cap-at-10 low severity",
+    "2026-10-19T10:10:15Z reviewer T5 attempt 1: invoked",
+    "2026-10-19T10:12:57Z reviewer T5 attempt 1: CHANGES_REQUESTED @0a5d8ea (Major: untested different-puzzle retry; Minors: cap 10 vs 3, banner clip at large font, live region, isGenerating feedback)",
+    "2026-10-19T10:12:57Z developer T5 attempt 2 (review findings): invoked",
+    "2026-10-19T10:23:10Z developer T5 attempt 2: DONE - head 66902f2 (generateDifferent extracted + 2 stub tests, cap 3, banner capped+always-composed live region, New Game disabled while generating, separator resource; +GameScreenStateTest), 117 tests, CI green; emulator NOT RUN",
+    "2026-10-19T10:23:10Z tester T5 attempt 2: invoked",
+    "2026-10-19T10:25:02Z tester T5 attempt 2: PASSED @66902f2 (no test changes), 117/117, 100% changed lines, CI green",
+    "2026-10-19T10:25:02Z reviewer T5 attempt 2: invoked",
+    "2026-10-19T10:26:12Z reviewer T5 attempt 2: APPROVE @66902f2 posted 10:25:42Z (1 Nit)",
+    "2026-10-19T10:26:12Z gatekeeper G3 T5 (PR #19, attempt 2): invoked",
+    "2026-10-19T10:26:57Z gatekeeper G3 T5: PASS @66902f2; GATE G3: PASS posted on PR #19",
+    "2026-10-19T10:26:57Z release integrate T5 (PR #19): invoked",
+    "2026-10-19T10:28:39Z release integrate T5: PR #19 squash-merged as 5533d4b into feature; issue #12 closed; feature CI 39237562076 success; T5 done",
+    "2026-10-19T10:28:39Z developer T6 attempt 1: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
