@@ -15,7 +15,7 @@
       "docs/adr/0002-saved-game-format.md",
       "docs/adr/0003-jvm-integration-tests-with-robolectric.md"
     ],
-    "audit": ""
+    "audit": "docs/runs/20261019-sudoku-mvp/audit.md"
   },
   "gates": {
     "G1": {
@@ -387,7 +387,7 @@
     "url": "https://github.com/greavemr-svg/suduko-agent-test/pull/22"
   },
   "counters": {
-    "agent_invocations": 75,
+    "agent_invocations": 77,
     "plan_attempts": 2,
     "design_attempts": 2,
     "invocation_cap": 80,
@@ -557,7 +557,11 @@
     "2026-10-19T13:58:20Z release prepare: invoked",
     "2026-10-19T14:09:30Z owner: perf checklist box -> \"Tick with NO_BASELINE note (Recommended)\"; security summary posted on epic #5",
     "2026-10-19T14:14:40Z release prepare: DONE - v0.1.0, eeb4a5f (CHANGELOG, docs/releases/v0.1.0.md, v0.1.0-pr.md), release PR #22; governance CI fails only on pending audit box (expected)",
-    "2026-10-19T14:14:40Z auditor: invoked"
+    "2026-10-19T14:14:40Z auditor: invoked",
+    "2026-10-19T14:23:08Z auditor: STOPPED at 40-turn limit, no audit.md written",
+    "2026-10-19T14:23:08Z auditor (retry, write-first brief): invoked",
+    "2026-10-19T14:27:53Z auditor retry: DONE - audit.md, 33 flags (High 3: F-01 heredoc writes, F-02 tester reports missing on GitHub for T1-T5 final heads, F-03 Scanner NOT RUN w/o owner decision; Medium 8; Low 13; Info 9). Two known wording errors in audit.md (T4 CR count, F-28 timing) left as-is (auditor-owned file)",
+    "2026-10-19T14:27:53Z release (prepare follow-up: tick audit box + flags in PR #22 body): invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
@@ -575,7 +579,7 @@
     "GPU bars NOT RUN; TalkBack spoken audio not captured",
     "perf results.json at G4",
     "follow-up: TouchTargetTest boundsInRoot equal spacing",
-    "ADR 0001 lint OldTargetApi amendment",
+    "ADR 0001 lint OldTargetApi amendment - DONE 3468f62",
     "hook-circumvention flag (T7 tester heredoc writes)"
   ],
   "owner_decisions": [
