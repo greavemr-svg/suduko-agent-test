@@ -17,8 +17,11 @@ fun EraseButton(
 ) {
     OutlinedButton(
         onClick = onClick,
+        contentPadding = PadContentPadding,
         modifier = modifier.heightIn(min = ControlHeight).testTag("erase"),
     ) {
-        Text(text = stringResource(R.string.erase))
+        CappedFontScale {
+            Text(text = stringResource(R.string.erase), maxLines = 1, softWrap = false)
+        }
     }
 }
