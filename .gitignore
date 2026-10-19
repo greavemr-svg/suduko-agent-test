@@ -5,3 +5,14 @@
 .env.*
 *.keystore
 *.jks
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+.idea/
+captures/
+.kotlin/
+*.iml
