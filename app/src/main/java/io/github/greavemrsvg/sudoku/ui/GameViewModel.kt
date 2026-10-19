@@ -15,7 +15,26 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private const val MAX_DIFFERENT_ATTEMPTS = 10
+/** Most puzzles generated per New Game while looking for one that differs from the current one (design, risks). */
+internal const val MAX_DIFFERENT_ATTEMPTS = 3
+
+/**
+ * Calls [generate] until it returns a puzzle whose givens differ from [previous]'s, at most [maxAttempts] times.
+ * After the last attempt the result is returned even if it repeats [previous].
+ */
+internal fun generateDifferent(
+    previous: Puzzle,
+    maxAttempts: Int,
+    generate: () -> Puzzle,
+): Puzzle {
+    var puzzle = generate()
+    var attempts = 1
+    while (puzzle.givens == previous.givens && attempts < maxAttempts) {
+        puzzle = generate()
+        attempts++
+    }
+    return puzzle
+}
 
 /**
  * Holds the current game in memory (persistence is added in a later task) and exposes it as
@@ -51,24 +70,14 @@ class GameViewModel(
         publish(current)
         viewModelScope.launch {
             try {
-                val puzzle = withContext(defaultDispatcher) { generateDifferentFrom(current.puzzle) }
+                val puzzle =
+                    withContext(defaultDispatcher) { generateDifferent(current.puzzle, MAX_DIFFERENT_ATTEMPTS, generator::generate) }
                 game = GameRules.newGame(puzzle)
             } finally {
                 isGenerating = false
                 game?.let { publish(it) }
             }
         }
-    }
-
-    /** Generates a puzzle whose givens differ from [previous]'s, retrying a bounded number of times. */
-    private fun generateDifferentFrom(previous: Puzzle): Puzzle {
-        var puzzle = generator.generate()
-        var attempts = 1
-        while (puzzle.givens == previous.givens && attempts < MAX_DIFFERENT_ATTEMPTS) {
-            puzzle = generator.generate()
-            attempts++
-        }
-        return puzzle
     }
 
     private fun update(transform: (GameState) -> GameState) {

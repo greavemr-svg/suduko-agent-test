@@ -219,4 +219,34 @@ class GameViewModelTest {
             vm.onNewGame()
             assertSame(GameUiState.Loading, vm.uiState.value)
         }
+
+    @Test
+    fun AC14_new_game_regenerates_when_the_first_puzzle_repeats_the_current_one() {
+        val current = puzzle()
+        val other = PuzzleGenerator(Random(seed + 1), SudokuSolver()).generate()
+        val returned = ArrayDeque(listOf(current, other))
+        var calls = 0
+        val result =
+            generateDifferent(current, MAX_DIFFERENT_ATTEMPTS) {
+                calls++
+                returned.removeFirst()
+            }
+        assertEquals(2, calls)
+        assertSame(other, result)
+        assertTrue(result.givens != current.givens)
+    }
+
+    @Test
+    fun AC14_regeneration_stops_after_the_attempt_cap() {
+        val current = puzzle()
+        var calls = 0
+        val result =
+            generateDifferent(current, MAX_DIFFERENT_ATTEMPTS) {
+                calls++
+                current
+            }
+        assertEquals(MAX_DIFFERENT_ATTEMPTS, calls)
+        assertEquals(3, MAX_DIFFERENT_ATTEMPTS)
+        assertSame(current, result)
+    }
 }
