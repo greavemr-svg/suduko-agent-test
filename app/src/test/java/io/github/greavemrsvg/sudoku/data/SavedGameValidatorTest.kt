@@ -95,7 +95,15 @@ class SavedGameValidatorTest {
     @Test
     fun AC18_rejects_uniquely_solvable_givens_that_belong_to_a_different_solution() {
         // Swapping digits 1 and 2 in the givens gives a count-valid, uniquely solvable puzzle for another grid.
-        val swapped = dto.givens.map { if (it == '1') '2' else if (it == '2') '1' else it }.joinToString("")
+        val swapped =
+            dto.givens
+                .map {
+                    when (it) {
+                        '1' -> '2'
+                        '2' -> '1'
+                        else -> it
+                    }
+                }.joinToString("")
         assertEquals(1, SudokuSolver().countSolutions(Grid(IntArray(CELL_COUNT) { swapped[it] - '0' }), 2))
         rejects(dto.copy(givens = swapped, entries = "0".repeat(CELL_COUNT), solved = false))
     }
