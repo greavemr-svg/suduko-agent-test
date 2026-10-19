@@ -79,6 +79,10 @@ class AccessibilityTest {
 
     @Test
     fun AC21_solved_message_is_a_live_region() {
+        // The live-region node exists from the start, empty, so TalkBack sees its text change when solved.
+        val before = composeRule.onNodeWithTag(SOLVED_BANNER_TAG).fetchSemanticsNode().config
+        assertTrue(before.contains(SemanticsProperties.LiveRegion))
+        composeRule.onNodeWithTag(SOLVED_BANNER_TAG).assertTextEquals("")
         for (i in (0 until CELL_COUNT).filter { !puzzle.isGiven(it) }) {
             cell(i).performClick()
             composeRule.onNodeWithTag("digit_${puzzle.solution.get(i)}").performClick()

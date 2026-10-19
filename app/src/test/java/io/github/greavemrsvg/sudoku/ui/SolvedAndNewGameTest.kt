@@ -45,7 +45,12 @@ class SolvedAndNewGameTest {
         }
     }
 
-    private fun bannerCount() = composeRule.onAllNodesWithTag(SOLVED_BANNER_TAG).fetchSemanticsNodes().size
+    // The banner node is always composed (live region); it counts as shown only while it has text.
+    private fun bannerCount() =
+        composeRule
+            .onAllNodesWithTag(SOLVED_BANNER_TAG)
+            .fetchSemanticsNodes()
+            .count { node -> node.config.getOrNull(SemanticsProperties.Text)?.any { it.text.isNotEmpty() } == true }
 
     private fun displayedDigits() = (0 until CELL_COUNT).map { cellText(it) }
 
