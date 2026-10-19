@@ -175,10 +175,42 @@
         2,
         3
       ],
-      "status": "in_progress",
-      "attempts": 1,
-      "pr": null,
-      "G3": null
+      "status": "done",
+      "attempts": 2,
+      "pr": 18,
+      "G3": {
+        "result": "PASS",
+        "at": "2026-10-19T09:48:59Z",
+        "head": "c4d7caa",
+        "attempt": 2,
+        "posted_on_pr": true,
+        "note": "AC4 met as recorded manual check; execution mandatory in T7 / G4.5"
+      },
+      "tester": {
+        "status": "PASSED",
+        "commit": "c4d7caa",
+        "suite": "94/94",
+        "coverage": "89.3% (192/215) changed lines",
+        "manual_not_run": [
+          "AC4 light/dark",
+          "AC20 monochromacy",
+          "Accessibility Scanner 360dp",
+          "box borders/selection visual"
+        ],
+        "note": "manual items carried to T7; dev ran 360dp font 1.0/2.0 emulator check"
+      },
+      "review": {
+        "verdict": "APPROVE",
+        "head": "c4d7caa",
+        "findings": "previous 1-3,5-7 resolved, 4 deferred to T7; 3 new Nit",
+        "posted_on_github": "2026-10-19T09:46:49Z"
+      },
+      "follow_ups": [
+        "T7: smoke test on real SudokuApplication/AppContainer defaults",
+        "T7: manual AC4 light/dark, AC20 monochromacy, Accessibility Scanner 360dp, visual borders",
+        "nits: PadLabelLayoutTest FQN + constant-vs-constant test; CappedFontScale non-linear scaling KDoc"
+      ],
+      "merged": "0a9fc86e"
     },
     {
       "n": 5,
@@ -188,8 +220,8 @@
       "deps": [
         4
       ],
-      "status": "todo",
-      "attempts": 0,
+      "status": "in_progress",
+      "attempts": 1,
       "pr": null,
       "G3": null
     },
@@ -229,9 +261,17 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 32,
+    "agent_invocations": 41,
     "plan_attempts": 2,
-    "design_attempts": 2
+    "design_attempts": 2,
+    "invocation_cap": 80,
+    "cap_override": {
+      "decision": "Raise cap to 80 (this run)",
+      "verbatim": "This run will probably need about 63 of the 60 allowed agent invocations, or more if any task needs a retry. How should I proceed?=\"Raise cap to 80 (this run)\"",
+      "at": "2026-10-19T09:55:40Z",
+      "by": "owner (greavemr-svg)",
+      "scope": "this run only; governance default 60 unchanged"
+    }
   },
   "log": [
     "2026-10-19T05:35:53Z orchestrator: run created, bootstrap=true, epic #5, branch feature/20261019-sudoku-mvp",
@@ -307,7 +347,25 @@
     "2026-10-19T09:00:35Z gatekeeper G3 T3 re-check: PASS @eaf9495; GATE G3: PASS posted on PR #17",
     "2026-10-19T09:00:35Z release integrate T3 (PR #17): invoked",
     "2026-10-19T09:02:21Z release integrate T3: PR #17 squash-merged as 5283308 into feature; issue #10 closed; feature CI 39226890363 success; T3 done",
-    "2026-10-19T09:02:21Z developer T4 attempt 1: invoked"
+    "2026-10-19T09:02:21Z developer T4 attempt 1: invoked",
+    "2026-10-19T09:14:45Z developer T4 attempt 1: DONE - PR #18 @31f7d61, tests pass, ~89% changed-line coverage, CI green; out-of-list: values-night/themes.xml (T1 nit), WalkingSkeletonTest update",
+    "2026-10-19T09:14:45Z tester T4 attempt 1: invoked",
+    "2026-10-19T09:23:25Z tester T4 attempt 1: PASSED - 889e24c (+ContrastTest, LargeFontTest outside list), 90/90, ~88%, CI green; 5 manual checks NOT RUN, carried to T7",
+    "2026-10-19T09:23:25Z reviewer T4 attempt 1: invoked; developer T4 (PR body: add ContrastTest/LargeFontTest to out-of-list section, no commits): invoked in parallel",
+    "2026-10-19T09:24:12Z developer T4 PR body update: DONE - ContrastTest/LargeFontTest stated, head unchanged 889e24c",
+    "2026-10-19T09:27:17Z reviewer T4 attempt 1: CHANGES_REQUESTED @889e24c (Major: Erase/digit labels clip due to default M3 button padding; Minor: AppContainer open unneeded, ContrastTest tests stock schemes, prod-defaults smoke test (T7), lifecycle-viewmodel in catalog)",
+    "2026-10-19T09:27:17Z developer T4 attempt 2 (review findings): invoked",
+    "2026-10-19T09:40:03Z developer T4 attempt 2: DONE - head 2aea6ae (pad padding fix + PadLabelLayoutTest, lifecycle-viewmodel declared, open dropped, viewModelFactory, digit size hoisted, LightColors/DarkColors internal); emulator check RUN at 360dp font 1.0/2.0 OK; CI green",
+    "2026-10-19T09:40:03Z tester T4 attempt 2: invoked",
+    "2026-10-19T09:44:38Z tester T4 attempt 2: PASSED - c4d7caa (ContrastTest uses app colours), 94/94, 89.3%, PadLabelLayoutTest fails with 24dp padding (verified), no weakening, CI green",
+    "2026-10-19T09:44:38Z reviewer T4 attempt 2: invoked",
+    "2026-10-19T09:47:26Z reviewer T4 attempt 2: APPROVE @c4d7caa posted 09:46:49Z (3 Nit). Hook notes: readonly hook blocked a word \"touch\" in review body and an arrow in a grep; reviewer reworded",
+    "2026-10-19T09:47:26Z gatekeeper G3 T4 (PR #18, attempt 2): invoked",
+    "2026-10-19T09:48:59Z gatekeeper G3 T4: PASS @c4d7caa; GATE G3: PASS posted on PR #18",
+    "2026-10-19T09:48:59Z release integrate T4 (PR #18): invoked",
+    "2026-10-19T09:55:40Z owner: invocation cap raised to 80 for this run (\"Raise cap to 80 (this run)\")",
+    "2026-10-19T09:55:40Z release integrate T4: PR #18 squash-merged as 0a9fc86 into feature; issue #11 closed; feature CI 39232910373 success; T4 done",
+    "2026-10-19T09:55:40Z developer T5 attempt 1: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
