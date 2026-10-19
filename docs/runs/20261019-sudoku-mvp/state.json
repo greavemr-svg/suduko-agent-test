@@ -98,10 +98,33 @@
       "deps": [
         1
       ],
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1,
-      "pr": null,
-      "G3": null
+      "pr": 16,
+      "G3": {
+        "result": "PASS",
+        "at": "2026-10-19T07:52:03Z",
+        "head": "aef2bc2",
+        "posted_on_pr": true
+      },
+      "tester": {
+        "status": "PASSED",
+        "commit": "aef2bc2",
+        "suite": "49/49",
+        "coverage": "100% changed domain lines"
+      },
+      "review": {
+        "verdict": "APPROVE",
+        "head": "aef2bc2",
+        "findings": "0 Blocker, 0 Major, 3 Minor (test-only), 1 Nit",
+        "posted_on_github": "2026-10-19T07:50:27Z"
+      },
+      "follow_ups": [
+        "tester: GameRulesTest solved_is_false_... almost-lines contradict name; AC7 wrong->wrong assertion weak; use GRID_SIZE/BOX_SIZE in TestPuzzles",
+        "developer (T6): explicit Grid encode, not toString",
+        "owner to confirm: @Suppress ktlint function-naming for AC<n>_ test names vs DoD \"no new warnings suppressed\" (also in T1 ManifestTest)"
+      ],
+      "merged": "21ac05f6"
     },
     {
       "n": 3,
@@ -111,8 +134,8 @@
       "deps": [
         2
       ],
-      "status": "todo",
-      "attempts": 0,
+      "status": "in_progress",
+      "attempts": 1,
       "pr": null,
       "G3": null
     },
@@ -179,7 +202,7 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 19,
+    "agent_invocations": 25,
     "plan_attempts": 2,
     "design_attempts": 2
   },
@@ -231,7 +254,19 @@
     "2026-10-19T07:33:39Z release integrate T1 (PR #15): invoked",
     "2026-10-19T07:34:25Z release integrate T1: PR #15 squash-merged as 7354451 into feature; issue #8 closed; T1 done",
     "2026-10-19T07:36:40Z orchestrator: feature CI run 39216812242 on 7354451 SUCCESS (earlier failure on cfc3c7e expected: project APPROVED before gradlew existed). Follow-up routing: backup-rules scope -> T6, partial-signing fail-loud -> T7, DayNight theme -> T4, ADR 0001 OldTargetApi amendment -> architect before G4",
-    "2026-10-19T07:36:40Z developer T2 attempt 1: invoked"
+    "2026-10-19T07:36:40Z developer T2 attempt 1: invoked",
+    "2026-10-19T07:45:22Z developer T2 attempt 1: DONE - PR #16 @13e5cfb, 39 tests pass, domain line coverage 100%, CI green",
+    "2026-10-19T07:45:22Z tester T2 attempt 1: invoked",
+    "2026-10-19T07:49:34Z tester T2 attempt 1: PASSED - aef2bc2 (+10 tests), 49/49, coverage 100%, CI green",
+    "2026-10-19T07:49:34Z reviewer T2 attempt 1: invoked",
+    "2026-10-19T07:50:46Z reviewer T2 attempt 1: APPROVE @aef2bc2 posted 07:50:27Z (3 Minor test-only, 1 Nit)",
+    "2026-10-19T07:50:46Z gatekeeper G3 T2 (PR #16): invoked",
+    "2026-10-19T07:52:03Z gatekeeper G3 T2: PASS @aef2bc2; GATE G3: PASS comment posted on PR #16",
+    "2026-10-19T07:52:03Z release integrate T2 (PR #16): invoked",
+    "2026-10-19T08:42:23Z release integrate T2: FAILED early - API session limit (429); no side effects (PR #16 still OPEN @aef2bc2, issue #9 open)",
+    "2026-10-19T08:42:23Z release integrate T2 (PR #16) retry after limit reset: invoked",
+    "2026-10-19T08:44:13Z release integrate T2: PR #16 squash-merged as 21ac05f into feature; issue #9 closed; feature CI 39224699066 success; T2 done",
+    "2026-10-19T08:44:13Z developer T3 attempt 1: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
