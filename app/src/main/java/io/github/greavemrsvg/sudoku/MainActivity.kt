@@ -4,43 +4,30 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import io.github.greavemrsvg.sudoku.ui.GameRoute
+import io.github.greavemrsvg.sudoku.ui.GameViewModel
 import io.github.greavemrsvg.sudoku.ui.theme.SudokuTheme
 
-/** The single activity. Shows a placeholder screen until the game screen is built. */
+/** The single activity. Shows the game screen. */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        val container = (application as SudokuApplication).container
+        val viewModel =
+            ViewModelProvider(
+                this,
+                viewModelFactory {
+                    initializer { GameViewModel(container.createPuzzleGenerator(), container.defaultDispatcher) }
+                },
+            )[GameViewModel::class.java]
         setContent {
             SudokuTheme {
-                PlaceholderScreen()
+                GameRoute(viewModel)
             }
-        }
-    }
-}
-
-@Composable
-private fun PlaceholderScreen() {
-    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-        Box(
-            modifier = Modifier.fillMaxSize().safeDrawingPadding(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
         }
     }
 }
