@@ -54,4 +54,9 @@ class TouchTargetTest {
         }
         composeRule.onNodeWithTag("erase").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp)
     }
+
+    @Test
+    fun NFR_new_game_button_is_at_least_48dp() {
+        composeRule.onNodeWithTag("new_game").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp)
+    }
 }

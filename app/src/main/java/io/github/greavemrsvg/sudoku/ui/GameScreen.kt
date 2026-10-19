@@ -3,8 +3,10 @@ package io.github.greavemrsvg.sudoku.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -27,6 +29,7 @@ fun GameRoute(viewModel: GameViewModel) {
         onCellTapped = viewModel::onCellTapped,
         onDigit = viewModel::onDigit,
         onErase = viewModel::onErase,
+        onNewGame = viewModel::onNewGame,
     )
 }
 
@@ -36,6 +39,7 @@ fun GameScreen(
     onCellTapped: (Int) -> Unit,
     onDigit: (Int) -> Unit,
     onErase: () -> Unit,
+    onNewGame: () -> Unit,
 ) {
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         when (state) {
@@ -51,6 +55,17 @@ fun GameScreen(
                     SudokuGrid(cells = state.cells, onCellTapped = onCellTapped)
                     Spacer(modifier = Modifier.height(16.dp))
                     DigitPad(onDigit = onDigit, onErase = onErase, modifier = Modifier.padding(horizontal = 8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            SolvedBanner(isSolved = state.isSolved)
+                        }
+                        NewGameButton(onClick = onNewGame, enabled = !state.isGenerating)
+                    }
                 }
         }
     }

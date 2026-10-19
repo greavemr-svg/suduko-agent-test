@@ -2,6 +2,7 @@ package io.github.greavemrsvg.sudoku.ui
 
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.getOrNull
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -43,7 +45,7 @@ class LargeFontTest {
                 val base = LocalDensity.current
                 CompositionLocalProvider(LocalDensity provides Density(base.density, fontScale = 2f)) {
                     SudokuTheme {
-                        GameScreen(GameUiState.Ready(cells, isSolved = false), {}, {}, {})
+                        GameScreen(GameUiState.Ready(cells, isSolved = false), {}, {}, {}, {})
                     }
                 }
             }
@@ -74,5 +76,44 @@ class LargeFontTest {
             composeRule.onNodeWithTag("digit_$digit").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp)
         }
         composeRule.onNodeWithTag("erase").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp)
+    }
+
+    @Test
+    fun NFR_solved_banner_fits_and_new_game_keeps_48dp_at_largest_font_scale() {
+        val cells =
+            List(
+                CELL_COUNT,
+            ) { i -> CellUi(i / GRID_SIZE, i % GRID_SIZE, i % GRID_SIZE + 1, isGiven = true, isMistake = false, isSelected = false) }
+        composeRule.runOnUiThread {
+            composeRule.activity.setContent {
+                val base = LocalDensity.current
+                CompositionLocalProvider(LocalDensity provides Density(base.density, fontScale = 2f)) {
+                    SudokuTheme {
+                        GameScreen(GameUiState.Ready(cells, isSolved = true), {}, {}, {}, {})
+                    }
+                }
+            }
+        }
+        composeRule.waitForIdle()
+        val root = composeRule.onRoot().fetchSemanticsNode().boundsInRoot
+        val banner = composeRule.onNodeWithTag(SOLVED_BANNER_TAG).fetchSemanticsNode()
+        val bounds = banner.boundsInRoot
+        assertTrue("banner $bounds outside screen $root", bounds.left >= root.left && bounds.right <= root.right)
+        assertTrue("banner $bounds outside screen $root", bounds.top >= root.top && bounds.bottom <= root.bottom)
+        val results = mutableListOf<TextLayoutResult>()
+        val action = banner.config.getOrNull(SemanticsActions.GetTextLayoutResult)?.action
+        assertTrue("banner exposes text layout", action != null && action(results) && results.isNotEmpty())
+        val layout = results.first()
+        // Robolectric text metrics are not real, so check the font cap, the line cap and the node bounds instead.
+        val fontPx =
+            with(layout.layoutInput.density) {
+                layout.layoutInput.style.fontSize
+                    .toPx()
+            }
+        val maxFontPx = MAX_PAD_FONT_SCALE * 16f * composeRule.activity.resources.displayMetrics.density
+        assertTrue("banner font ${fontPx}px exceeds capped ${maxFontPx}px", fontPx <= maxFontPx + 1f)
+        assertTrue("banner text taller than its node", layout.size.height <= banner.size.height)
+        assertTrue("banner exceeds two lines", layout.lineCount <= 2)
+        composeRule.onNodeWithTag("new_game").assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp)
     }
 }
