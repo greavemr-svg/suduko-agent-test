@@ -4,7 +4,12 @@ package io.github.greavemrsvg.sudoku.data
 
 import io.github.greavemrsvg.sudoku.data.SaveFixtures.withChar
 import io.github.greavemrsvg.sudoku.domain.CELL_COUNT
+import io.github.greavemrsvg.sudoku.domain.EMPTY
+import io.github.greavemrsvg.sudoku.domain.Grid
+import io.github.greavemrsvg.sudoku.domain.MAX_GIVENS
+import io.github.greavemrsvg.sudoku.domain.MIN_GIVENS
 import io.github.greavemrsvg.sudoku.domain.SavedGameValidator
+import io.github.greavemrsvg.sudoku.domain.SudokuSolver
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -88,21 +93,49 @@ class SavedGameValidatorTest {
     }
 
     @Test
+    fun AC18_rejects_uniquely_solvable_givens_that_belong_to_a_different_solution() {
+        // Swapping digits 1 and 2 in the givens gives a count-valid, uniquely solvable puzzle for another grid.
+        val swapped = dto.givens.map { if (it == '1') '2' else if (it == '2') '1' else it }.joinToString("")
+        assertEquals(1, SudokuSolver().countSolutions(Grid(IntArray(CELL_COUNT) { swapped[it] - '0' }), 2))
+        rejects(dto.copy(givens = swapped, entries = "0".repeat(CELL_COUNT), solved = false))
+    }
+
+    @Test
     fun AC18_rejects_too_few_givens() {
-        val few = solution.mapIndexed { i, c -> if (i < MIN_GIVEN_ROWS_CELLS - 1) c else '0' }.joinToString("")
-        rejects(dto.copy(givens = few, entries = "0".repeat(CELL_COUNT), solved = false))
+        // Greedily blank solution cells while the puzzle stays uniquely solvable, stopping at one below the minimum.
+        val cells = IntArray(CELL_COUNT) { solution[it] - '0' }
+        var filled = CELL_COUNT
+        for (i in 0 until CELL_COUNT) {
+            if (filled == MIN_GIVENS - 1) break
+            val kept = cells[i]
+            cells[i] = EMPTY
+            if (SudokuSolver().countSolutions(Grid(cells), 2) == 1) filled-- else cells[i] = kept
+        }
+        assertEquals(MIN_GIVENS - 1, filled)
+        assertEquals(1, SudokuSolver().countSolutions(Grid(cells), 2))
+        rejects(dto.copy(givens = cells.joinToString(""), entries = "0".repeat(CELL_COUNT), solved = false))
     }
 
     @Test
     fun AC18_rejects_too_many_givens() {
-        val many = solution.mapIndexed { i, c -> if (i < MAX_GIVEN_CELLS + 1) c else '0' }.joinToString("")
-        rejects(dto.copy(givens = many, entries = "0".repeat(CELL_COUNT), solved = false))
+        // Fixture puzzle plus solution digits at open cells until one above the maximum; stays uniquely solvable.
+        val cells = IntArray(CELL_COUNT) { dto.givens[it] - '0' }
+        var filled = cells.count { it != EMPTY }
+        for (i in SaveFixtures.openCells) {
+            if (filled == MAX_GIVENS + 1) break
+            cells[i] = solution[i] - '0'
+            filled++
+        }
+        assertEquals(MAX_GIVENS + 1, filled)
+        assertEquals(1, SudokuSolver().countSolutions(Grid(cells), 2))
+        rejects(dto.copy(givens = cells.joinToString(""), entries = "0".repeat(CELL_COUNT), solved = false))
     }
 
     @Test
     fun AC18_rejects_givens_without_a_unique_solution() {
-        // The first four rows (36 givens) leave the other five rows with many completions.
-        val loose = solution.mapIndexed { i, c -> if (i < MIN_GIVEN_ROWS_CELLS) c else '0' }.joinToString("")
+        // The first four rows (36 givens, inside the count range) leave the other five rows with many completions.
+        val loose = solution.mapIndexed { i, c -> if (i < MIN_GIVENS) c else '0' }.joinToString("")
+        assertEquals(2, SudokuSolver().countSolutions(Grid(IntArray(CELL_COUNT) { loose[it] - '0' }), 2))
         rejects(dto.copy(givens = loose, entries = "0".repeat(CELL_COUNT), solved = false))
     }
 
@@ -119,10 +152,5 @@ class SavedGameValidatorTest {
     @Test
     fun AC18_rejects_solved_false_when_solved() {
         rejects(SavedGameCodec.toDto(SaveFixtures.solved).copy(solved = false))
-    }
-
-    private companion object {
-        const val MIN_GIVEN_ROWS_CELLS = 36
-        const val MAX_GIVEN_CELLS = 46
     }
 }
