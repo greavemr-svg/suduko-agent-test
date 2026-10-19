@@ -35,9 +35,11 @@ fun EraseButton(
 fun NewGameButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     OutlinedButton(
         onClick = onClick,
+        enabled = enabled,
         contentPadding = PadContentPadding,
         modifier = modifier.heightIn(min = ControlHeight).widthIn(min = NewGameMinWidth).testTag("new_game"),
     ) {

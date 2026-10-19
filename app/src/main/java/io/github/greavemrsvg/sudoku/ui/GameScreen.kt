@@ -62,9 +62,9 @@ fun GameScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         Box(modifier = Modifier.weight(1f)) {
-                            if (state.isSolved) SolvedBanner()
+                            SolvedBanner(isSolved = state.isSolved)
                         }
-                        NewGameButton(onClick = onNewGame)
+                        NewGameButton(onClick = onNewGame, enabled = !state.isGenerating)
                     }
                 }
         }
