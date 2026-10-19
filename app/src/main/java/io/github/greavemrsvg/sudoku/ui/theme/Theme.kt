@@ -6,8 +6,8 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-private val LightColors = lightColorScheme()
-private val DarkColors = darkColorScheme()
+internal val LightColors = lightColorScheme()
+internal val DarkColors = darkColorScheme()
 
 /** Material 3 theme. Dynamic colour is deliberately off so contrast is predictable. */
 @Composable

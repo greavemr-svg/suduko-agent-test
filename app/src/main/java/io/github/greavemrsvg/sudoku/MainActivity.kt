@@ -4,8 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.greavemrsvg.sudoku.ui.GameRoute
 import io.github.greavemrsvg.sudoku.ui.GameViewModel
 import io.github.greavemrsvg.sudoku.ui.theme.SudokuTheme
@@ -19,10 +20,8 @@ class MainActivity : ComponentActivity() {
         val viewModel =
             ViewModelProvider(
                 this,
-                object : ViewModelProvider.Factory {
-                    @Suppress("UNCHECKED_CAST")
-                    override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                        GameViewModel(container.createPuzzleGenerator(), container.defaultDispatcher) as T
+                viewModelFactory {
+                    initializer { GameViewModel(container.createPuzzleGenerator(), container.defaultDispatcher) }
                 },
             )[GameViewModel::class.java]
         setContent {

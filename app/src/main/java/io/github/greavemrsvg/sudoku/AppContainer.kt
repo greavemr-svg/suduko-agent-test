@@ -13,7 +13,7 @@ import kotlin.random.Random
  * application-scoped coroutine scope and holds no game state. Randomness and the
  * dispatcher for puzzle generation are injected so tests can make them deterministic.
  */
-open class AppContainer(
+class AppContainer(
     private val random: Random = Random.Default,
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default,
 ) {
