@@ -9,4 +9,5 @@
     <string name="cell_empty">empty</string>
     <string name="cell_given">given</string>
     <string name="cell_mistake">mistake</string>
+    <string name="cell_description_separator">", "</string>
 </resources>

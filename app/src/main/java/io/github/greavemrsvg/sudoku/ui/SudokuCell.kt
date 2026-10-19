@@ -124,7 +124,7 @@ private fun cellDescription(cell: CellUi): String {
     val content = if (cell.digit == EMPTY) stringResource(R.string.cell_empty) else cell.digit.toString()
     val given = if (cell.isGiven) stringResource(R.string.cell_given) else null
     val mistake = if (cell.isMistake) stringResource(R.string.cell_mistake) else null
-    return listOfNotNull(position, content, given, mistake).joinToString(", ")
+    return listOfNotNull(position, content, given, mistake).joinToString(stringResource(R.string.cell_description_separator))
 }
 
 private fun DrawScope.drawCellBorders(
