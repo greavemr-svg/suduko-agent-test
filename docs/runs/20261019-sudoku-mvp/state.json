@@ -2,7 +2,7 @@
   "run_id": "20261019-sudoku-mvp",
   "idea": "A simple Android Sudoku app: generate a new easy puzzle, let the player fill in cells, and highlight mistakes.",
   "status": "in_progress",
-  "stage": "release_prep",
+  "stage": "audit",
   "bootstrap": true,
   "created_at": "2026-10-19T05:35:53Z",
   "epic_issue": 5,
@@ -381,13 +381,13 @@
     }
   ],
   "release": {
-    "version": "",
-    "pr": null,
+    "version": "0.1.0",
+    "pr": 22,
     "tag": "",
-    "url": ""
+    "url": "https://github.com/greavemr-svg/suduko-agent-test/pull/22"
   },
   "counters": {
-    "agent_invocations": 74,
+    "agent_invocations": 75,
     "plan_attempts": 2,
     "design_attempts": 2,
     "invocation_cap": 80,
@@ -554,7 +554,10 @@
     "2026-10-19T13:55:05Z performance: NO_BASELINE @212365a; proposed baseline recorded; first launch median 722ms, restore overhead ~100ms; tap latency unmeasured",
     "2026-10-19T13:55:05Z gatekeeper G4: invoked",
     "2026-10-19T13:58:20Z gatekeeper G4: PASS @3468f62 (all 23 ACs traced; carried items recorded). Note: G4 carried-list item about GameSaverProductionWiringTest Windows skip is stale - resolved in 41e30d1",
-    "2026-10-19T13:58:20Z release prepare: invoked"
+    "2026-10-19T13:58:20Z release prepare: invoked",
+    "2026-10-19T14:09:30Z owner: perf checklist box -> \"Tick with NO_BASELINE note (Recommended)\"; security summary posted on epic #5",
+    "2026-10-19T14:14:40Z release prepare: DONE - v0.1.0, eeb4a5f (CHANGELOG, docs/releases/v0.1.0.md, v0.1.0-pr.md), release PR #22; governance CI fails only on pending audit box (expected)",
+    "2026-10-19T14:14:40Z auditor: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
@@ -574,5 +577,12 @@
     "follow-up: TouchTargetTest boundsInRoot equal spacing",
     "ADR 0001 lint OldTargetApi amendment",
     "hook-circumvention flag (T7 tester heredoc writes)"
+  ],
+  "owner_decisions": [
+    {
+      "at": "2026-10-19T14:09:30Z",
+      "question": "Release checklist perf box vs NO_BASELINE",
+      "verbatim": "The release checklist only accepts performance PASS or NOT_APPLICABLE, but this first run is NO_BASELINE, which G4.4 accepts. How should the release agent handle that checklist box?=\"Tick with NO_BASELINE note (Recommended)\""
+    }
   ]
 }
