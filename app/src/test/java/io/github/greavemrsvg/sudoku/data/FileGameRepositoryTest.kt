@@ -14,6 +14,8 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowLog
 import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
@@ -106,6 +108,48 @@ class FileGameRepositoryTest {
             // A directory where the file should be cannot be read as a save.
             assertTrue(saveFile(dir).mkdir())
             assertNull(repository(dir).load())
+        }
+
+    @Test
+    @Config(sdk = [26])
+    fun AC18_valid_backup_without_a_base_file_is_recovered() =
+        runTest {
+            val dir = temp.newFolder()
+            val valid = SavedGameCodec.encode(SaveFixtures.inProgress)
+            File(dir, "saved_game.json.bak").writeBytes(valid)
+            assertFalse(saveFile(dir).exists())
+            assertEquals(SaveFixtures.inProgress, repository(dir).load())
+        }
+
+    @Test
+    @Config(sdk = [26])
+    fun AC18_oversize_backup_without_a_base_file_is_rejected_and_deleted() =
+        runTest {
+            val dir = temp.newFolder()
+            File(dir, "saved_game.json.bak").writeText("x".repeat(SavedGameCodec.MAX_BYTES * 4))
+            assertNull(repository(dir).load())
+            assertFalse(saveFile(dir).exists())
+            assertFalse(File(dir, "saved_game.json.bak").exists())
+        }
+
+    @Test
+    fun AC18_missing_file_does_not_log() =
+        runTest {
+            ShadowLog.clear()
+            assertNull(repository(temp.newFolder()).load())
+            assertTrue(ShadowLog.getLogs().isEmpty())
+        }
+
+    @Test
+    fun AC18_invalid_file_logs_the_fixed_message_only() =
+        runTest {
+            val dir = temp.newFolder()
+            saveFile(dir).writeText("secret-looking-content")
+            ShadowLog.clear()
+            assertNull(repository(dir).load())
+            val logs = ShadowLog.getLogs()
+            assertEquals(1, logs.size)
+            assertEquals("Saved game is unreadable or invalid and was discarded", logs[0].msg)
         }
 
     @Test

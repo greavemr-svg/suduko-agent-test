@@ -11,8 +11,15 @@ object SavedGameCodec {
     /** Largest file accepted before decoding. */
     const val MAX_BYTES = 4 * 1024
 
-    // Strict: the default Json rejects unknown keys, missing keys and wrong types.
-    private val json = Json
+    // Strict settings, written out explicitly. Unknown keys and missing keys are rejected. Note that
+    // kotlinx.serialization still accepts a quoted number for an Int field; the validator checks content.
+    private val json =
+        Json {
+            isLenient = false
+            ignoreUnknownKeys = false
+            coerceInputValues = false
+            explicitNulls = true
+        }
 
     fun toDto(state: GameState): SavedGameDto =
         SavedGameDto(

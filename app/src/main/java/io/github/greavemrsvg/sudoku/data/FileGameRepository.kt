@@ -24,8 +24,15 @@ class FileGameRepository(
 
     override suspend fun load(): GameState? =
         withContext(ioDispatcher) {
-            if (!file.baseFile.exists()) return@withContext null
-            val state = readBytes()?.let { SavedGameCodec.decode(it) }?.let { SavedGameValidator.validate(it) }
+            val bytes =
+                try {
+                    readBounded()
+                } catch (_: FileNotFoundException) {
+                    return@withContext null
+                } catch (_: IOException) {
+                    null
+                }
+            val state = bytes?.let { SavedGameCodec.decode(it) }?.let { SavedGameValidator.validate(it) }
             if (state == null) {
                 Log.w(TAG, "Saved game is unreadable or invalid and was discarded")
                 file.delete()
@@ -51,19 +58,24 @@ class FileGameRepository(
         }
     }
 
-    /** The file content; null when unreadable. A file over the size cap yields bytes the codec rejects. */
-    private fun readBytes(): ByteArray? =
-        try {
-            if (file.baseFile.length() > SavedGameCodec.MAX_BYTES) {
-                ByteArray(SavedGameCodec.MAX_BYTES + 1)
-            } else {
-                file.readFully()
+    /**
+     * Reads at most [SavedGameCodec.MAX_BYTES] + 1 bytes through [AtomicFile.openRead], which on API 26-29
+     * first restores a leftover backup. A file over the cap yields oversize bytes the codec rejects.
+     * Throws [FileNotFoundException] when there is no save, other [IOException]s when unreadable.
+     */
+    private fun readBounded(): ByteArray {
+        val limit = SavedGameCodec.MAX_BYTES + 1
+        file.openRead().use { input ->
+            val buffer = ByteArray(limit)
+            var total = 0
+            while (total < limit) {
+                val n = input.read(buffer, total, limit - total)
+                if (n < 0) break
+                total += n
             }
-        } catch (_: FileNotFoundException) {
-            null
-        } catch (_: IOException) {
-            null
+            return buffer.copyOf(total)
         }
+    }
 
     private companion object {
         const val FILE_NAME = "saved_game.json"
