@@ -1,11 +1,18 @@
 package io.github.greavemrsvg.sudoku.ui
 
+import io.github.greavemrsvg.sudoku.data.GameSaver
 import io.github.greavemrsvg.sudoku.domain.CELL_COUNT
 import io.github.greavemrsvg.sudoku.domain.EMPTY
 import io.github.greavemrsvg.sudoku.domain.GRID_SIZE
+import io.github.greavemrsvg.sudoku.domain.GameRepository
+import io.github.greavemrsvg.sudoku.domain.GameRules
+import io.github.greavemrsvg.sudoku.domain.GameState
+import io.github.greavemrsvg.sudoku.domain.Grid
 import io.github.greavemrsvg.sudoku.domain.Puzzle
 import io.github.greavemrsvg.sudoku.domain.PuzzleGenerator
 import io.github.greavemrsvg.sudoku.domain.SudokuSolver
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -33,7 +40,31 @@ class GameViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun viewModel() = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), UnconfinedTestDispatcher())
+    private class FakeRepository(
+        var stored: GameState? = null,
+    ) : GameRepository {
+        val saved = mutableListOf<GameState>()
+
+        override suspend fun load(): GameState? = stored
+
+        override suspend fun save(state: GameState) {
+            saved += state
+        }
+    }
+
+    private val repository = FakeRepository()
+
+    private fun newVm(
+        dispatcher: CoroutineDispatcher,
+        repo: FakeRepository = repository,
+    ) = GameViewModel(
+        PuzzleGenerator(Random(seed), SudokuSolver()),
+        dispatcher,
+        repo,
+        GameSaver(CoroutineScope(UnconfinedTestDispatcher()), repo),
+    )
+
+    private fun viewModel(repo: FakeRepository = repository) = newVm(UnconfinedTestDispatcher(), repo)
 
     private fun GameViewModel.ready() = uiState.value as GameUiState.Ready
 
@@ -48,7 +79,7 @@ class GameViewModelTest {
     @Test
     fun AC1_starts_loading_then_shows_generated_puzzle() =
         runTest {
-            val vm = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), StandardTestDispatcher(testScheduler))
+            val vm = newVm(StandardTestDispatcher(testScheduler))
             assertSame(GameUiState.Loading, vm.uiState.value)
             testScheduler.advanceUntilIdle()
             val ready = vm.ready()
@@ -116,7 +147,7 @@ class GameViewModelTest {
     @Test
     fun input_before_the_puzzle_is_ready_is_ignored() =
         runTest {
-            val vm = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), StandardTestDispatcher(testScheduler))
+            val vm = newVm(StandardTestDispatcher(testScheduler))
             vm.onCellTapped(0)
             vm.onDigit(1)
             vm.onErase()
@@ -164,7 +195,7 @@ class GameViewModelTest {
     fun AC14_new_game_is_ignored_while_generating_and_input_waits_for_the_new_puzzle() =
         runTest {
             val scheduler = testScheduler
-            val vm = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), StandardTestDispatcher(scheduler))
+            val vm = newVm(StandardTestDispatcher(scheduler))
             scheduler.advanceUntilIdle()
             val first = vm.ready().cells.map { it.digit }
             val open =
@@ -215,7 +246,7 @@ class GameViewModelTest {
     @Test
     fun new_game_before_the_first_puzzle_is_ready_is_ignored() =
         runTest {
-            val vm = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), StandardTestDispatcher(testScheduler))
+            val vm = newVm(StandardTestDispatcher(testScheduler))
             vm.onNewGame()
             assertSame(GameUiState.Loading, vm.uiState.value)
         }
@@ -248,5 +279,78 @@ class GameViewModelTest {
         assertEquals(MAX_DIFFERENT_ATTEMPTS, calls)
         assertEquals(3, MAX_DIFFERENT_ATTEMPTS)
         assertSame(current, result)
+    }
+
+    @Test
+    fun AC15_a_saved_game_is_restored_instead_of_generating_a_new_puzzle() {
+        val puzzle = puzzle()
+        val open = puzzle.firstOpenIndex()
+        val saved = GameRules.enterDigit(GameRules.select(GameRules.newGame(puzzle), open), puzzle.wrongDigitAt(open))
+        val repo = FakeRepository(saved)
+        val vm = viewModel(repo)
+        assertEquals(puzzle.wrongDigitAt(open), vm.ready().cells[open].digit)
+        assertTrue(vm.ready().cells[open].isMistake)
+        assertTrue(repo.saved.isEmpty())
+    }
+
+    @Test
+    fun AC16_a_saved_solved_game_is_restored_solved_and_read_only() {
+        val puzzle = puzzle()
+        val entries = Grid(IntArray(CELL_COUNT) { if (puzzle.isGiven(it)) EMPTY else puzzle.solution.get(it) })
+        val vm = viewModel(FakeRepository(GameState(puzzle, entries)))
+        assertTrue(vm.ready().isSolved)
+        val before = vm.ready().cells.map { it.digit }
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        vm.onErase()
+        assertEquals(before, vm.ready().cells.map { it.digit })
+    }
+
+    @Test
+    fun AC18_without_a_save_a_new_puzzle_is_generated_and_saved() {
+        val repo = FakeRepository(null)
+        val vm = viewModel(repo)
+        assertEquals(1, repo.saved.size)
+        assertEquals(puzzle(), repo.saved[0].puzzle)
+        assertFalse(vm.ready().isSolved)
+    }
+
+    @Test
+    fun AC15_entries_erase_and_new_game_are_saved_but_selecting_is_not() {
+        val puzzle = puzzle()
+        val repo = FakeRepository(null)
+        val vm = viewModel(repo)
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        assertEquals(1, repo.saved.size)
+        vm.onDigit(puzzle.solution.get(open))
+        assertEquals(
+            puzzle.solution.get(open),
+            repo.saved
+                .last()
+                .entries
+                .get(open),
+        )
+        vm.onErase()
+        assertEquals(
+            EMPTY,
+            repo.saved
+                .last()
+                .entries
+                .get(open),
+        )
+        val before = repo.saved.size
+        vm.onNewGame()
+        assertEquals(before + 1, repo.saved.size)
+        assertTrue(repo.saved.last().puzzle != puzzle)
+    }
+
+    @Test
+    fun AC16_solving_saves_the_solved_game() {
+        val puzzle = puzzle()
+        val repo = FakeRepository(null)
+        viewModel(repo).solve(puzzle)
+        assertTrue(repo.saved.last().isSolved)
     }
 }
