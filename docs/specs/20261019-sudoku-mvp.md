@@ -93,8 +93,12 @@ puzzle's unique solution.
   emulator; a digit entry, Erase or mistake highlight appears within 100 ms of
   the tap; restoring a saved game on relaunch adds no more than 1 second to
   app start-up.
-- Accessibility: all interactive elements have a touch target of at least
-  48x48 dp; text and cell-state indicators meet WCAG 2.1 AA contrast (4.5:1
+- Accessibility: the nine cells in each grid row share the available screen
+  width equally, and each grid cell's touch target is at least 24x24 dp on a
+  360 dp wide portrait screen (WCAG 2.2 AA target-size minimum; see A10);
+  every other interactive control (digit buttons 1-9, Erase and New Game) has
+  a touch target of at least 48x48 dp; text and cell-state indicators meet
+  WCAG 2.1 AA contrast (4.5:1
   for digits, 3:1 for non-text indicators); mistakes are not indicated by
   colour alone (AC20); all cells and controls have TalkBack descriptions
   (AC21); digits remain readable with the system font size set to the largest
@@ -139,6 +143,12 @@ Android auto-backup may include it; this is acceptable.
 - A8: English-only text.
 - A9: The app name and icon are placeholders to be finalised later; they do
   not affect any AC.
+- A10: Nine grid cells at 48 dp need 432 dp, more than the 360-411 dp width of
+  target phones. Owner decision on 2026-10-19 ("Cells share width"): grid
+  cells share the available width equally (about 40-45 dp each on 360-411 dp
+  phones) with a minimum of 24x24 dp per the WCAG 2.2 AA target-size
+  criterion; the 48x48 dp minimum still applies to every other interactive
+  control.
 
 ## Dependencies and risks
 - Dependency: the technology stack, project commands and coverage tooling are

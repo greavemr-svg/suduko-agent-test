@@ -14,8 +14,8 @@
     "audit": ""
   },
   "gates": {
-    "G1": {"result": "PASS", "at": "2026-10-19T06:28:50Z", "blocking": [], "notes": "All G1.1-G1.7 + DoR evidenced; consistent with owner answers. DoR.10 (<=8 tasks) to be confirmed at G2."},
-    "spec_approval": {"decision": "Approve spec", "verbatim": "Gate A: do you approve the spec docs/specs/20261019-sudoku-mvp.md, including the assumptions A1, A4, A6 and A7?=\"Approve spec\"", "at": "2026-10-19T06:33:08Z", "by": "owner (greavemr-svg)"},
+    "G1": {"result": "PASS", "at": "2026-10-19T06:47:36Z", "supersedes": "PASS 2026-10-19T06:28:50Z (pre-amendment)", "blocking": [], "notes": "All G1.1-G1.7 + DoR evidenced; consistent with owner answers. DoR.10 (<=8 tasks) to be confirmed at G2."},
+    "spec_approval": {"decision": "Approve spec", "verbatim": "Gate A (re-approval): do you approve the amended spec docs/specs/20261019-sudoku-mvp.md, with the reworded accessibility rule and the new assumption A10?=\"Approve spec\"", "at": "2026-10-19T06:53:26Z", "by": "owner (greavemr-svg)", "previous": {"verbatim": "Gate A: do you approve the spec docs/specs/20261019-sudoku-mvp.md, including the assumptions A1, A4, A6 and A7?=\"Approve spec\"", "at": "2026-10-19T06:33:08Z", "commit": "9feb05f"}},
     "G2": null,
     "stack_approval": null,
     "G4": null,
@@ -30,8 +30,8 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 5,
-    "plan_attempts": 1
+    "agent_invocations": 9,
+    "plan_attempts": 2
   },
   "log": [
     "2026-10-19T05:35:53Z orchestrator: run created, bootstrap=true, epic #5, branch feature/20261019-sudoku-mvp",
@@ -46,7 +46,17 @@
     "2026-10-19T06:27:58Z gatekeeper G1: invoked",
     "2026-10-19T06:28:50Z gatekeeper G1: PASS (no blocking items)",
     "2026-10-19T06:28:50Z orchestrator: Gate A presented to owner",
-    "2026-10-19T06:33:08Z owner: Gate A APPROVED (\"Approve spec\")"
+    "2026-10-19T06:33:08Z owner: Gate A APPROVED (\"Approve spec\")",
+    "2026-10-19T06:33:17Z architect attempt 1: invoked",
+    "2026-10-19T06:43:50Z architect attempt 1: BLOCKED - Q1 NFR conflict: 48dp touch target impossible for 9 grid cells on 360-411dp phones; design+3 ADRs+project.md (PROPOSED) written, 7 tasks; escalated to owner",
+    "2026-10-19T06:45:43Z owner Q1 answer: \"Cells share width (Recommended)\" - grid cells share screen width equally (~40-45dp, >= WCAG 2.2 AA 24dp); 48dp min applies to all other controls",
+    "2026-10-19T06:45:43Z planner attempt 2 (spec amendment NFR touch target): invoked",
+    "2026-10-19T06:46:51Z planner attempt 2: DONE - Accessibility NFR reworded (cells share width, >=24dp; other controls >=48dp), A10 added",
+    "2026-10-19T06:46:51Z gatekeeper G1 (re-check after amendment): invoked",
+    "2026-10-19T06:47:36Z gatekeeper G1 re-check: PASS (no blocking items; amendment testable and matches owner decision)",
+    "2026-10-19T06:47:36Z orchestrator: Gate A re-presented for amended spec",
+    "2026-10-19T06:53:26Z owner: Gate A re-APPROVED amended spec (\"Approve spec\")",
+    "2026-10-19T06:53:26Z gatekeeper G2: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
