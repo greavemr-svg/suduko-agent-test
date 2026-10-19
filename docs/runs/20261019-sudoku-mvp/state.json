@@ -134,10 +134,37 @@
       "deps": [
         2
       ],
-      "status": "in_progress",
-      "attempts": 1,
-      "pr": null,
-      "G3": null
+      "status": "done",
+      "attempts": 2,
+      "pr": 17,
+      "G3": {
+        "result": "PASS",
+        "at": "2026-10-19T09:00:35Z",
+        "head": "eaf9495",
+        "attempt": 2,
+        "supersedes": "FAIL attempt 1 (G3.6)",
+        "posted_on_pr": true
+      },
+      "tester": {
+        "status": "PASSED",
+        "commit": "eaf9495",
+        "suite": "70/70",
+        "coverage": "98.0% (97/99) changed lines"
+      },
+      "review": {
+        "verdict": "APPROVE",
+        "head": "eaf9495",
+        "findings": "0 Blocker, 0 Major, 4 Minor (optional), 2 Nit",
+        "posted_on_github": "2026-10-19T08:57:12Z"
+      },
+      "follow_ups": [
+        "perf report: add p50Millis (design asks p50/p95/max)",
+        "NODE_BUDGET 20000 ~14x vs design ~10x: lower or document",
+        "fill() effort not in node budget",
+        "optional SolutionCounter interface to test MAX_GENERATION_ATTEMPTS",
+        "nits in GeneratorIndependentChecksTest"
+      ],
+      "merged": "5283308c"
     },
     {
       "n": 4,
@@ -148,8 +175,8 @@
         2,
         3
       ],
-      "status": "todo",
-      "attempts": 0,
+      "status": "in_progress",
+      "attempts": 1,
       "pr": null,
       "G3": null
     },
@@ -202,7 +229,7 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 25,
+    "agent_invocations": 32,
     "plan_attempts": 2,
     "design_attempts": 2
   },
@@ -266,7 +293,21 @@
     "2026-10-19T08:42:23Z release integrate T2: FAILED early - API session limit (429); no side effects (PR #16 still OPEN @aef2bc2, issue #9 open)",
     "2026-10-19T08:42:23Z release integrate T2 (PR #16) retry after limit reset: invoked",
     "2026-10-19T08:44:13Z release integrate T2: PR #16 squash-merged as 21ac05f into feature; issue #9 closed; feature CI 39224699066 success; T2 done",
-    "2026-10-19T08:44:13Z developer T3 attempt 1: invoked"
+    "2026-10-19T08:44:13Z developer T3 attempt 1: invoked",
+    "2026-10-19T08:51:54Z developer T3 attempt 1: DONE - PR #17 @54457ea, 61 tests pass, perf max 1382 nodes (budget 20000), CI green; changed-lines coverage not computed",
+    "2026-10-19T08:51:54Z tester T3 attempt 1: invoked",
+    "2026-10-19T08:56:00Z tester T3 attempt 1: PASSED - eaf9495 (+9 tests, independent AC2/AC3 checks), 70/70, coverage 98%, CI green; MAX_GENERATION_ATTEMPTS throw untestable (final solver)",
+    "2026-10-19T08:56:00Z reviewer T3 attempt 1: invoked",
+    "2026-10-19T08:57:39Z reviewer T3 attempt 1: APPROVE @eaf9495 posted 08:57:12Z (4 optional Minor, 2 Nit)",
+    "2026-10-19T08:57:39Z gatekeeper G3 T3 (PR #17): invoked",
+    "2026-10-19T08:58:27Z gatekeeper G3 T3: FAIL @eaf9495 - G3.6 unstated out-of-list test file; GATE G3: FAIL posted on PR #17",
+    "2026-10-19T08:58:27Z developer T3 attempt 2 (PR body fix only, no code change): invoked. Tester/reviewer not re-run if head SHA unchanged: their evidence is on the same commit",
+    "2026-10-19T08:59:38Z developer T3 attempt 2: DONE - PR #17 body updated (GeneratorIndependentChecksTest.kt stated + AC rows), head unchanged eaf9495",
+    "2026-10-19T08:59:38Z gatekeeper G3 T3 re-check (attempt 2): invoked",
+    "2026-10-19T09:00:35Z gatekeeper G3 T3 re-check: PASS @eaf9495; GATE G3: PASS posted on PR #17",
+    "2026-10-19T09:00:35Z release integrate T3 (PR #17): invoked",
+    "2026-10-19T09:02:21Z release integrate T3: PR #17 squash-merged as 5283308 into feature; issue #10 closed; feature CI 39226890363 success; T3 done",
+    "2026-10-19T09:02:21Z developer T4 attempt 1: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
