@@ -263,10 +263,41 @@
         2,
         3
       ],
-      "status": "in_progress",
-      "attempts": 1,
-      "pr": null,
-      "G3": null
+      "status": "done",
+      "attempts": 3,
+      "pr": 20,
+      "G3": {
+        "result": "PASS",
+        "at": "2026-10-19T11:27:20Z",
+        "head": "d3b6d26",
+        "attempt": 3,
+        "supersedes": "FAIL G3.4 (report not on PR)",
+        "posted_on_pr": true
+      },
+      "tester": {
+        "status": "PASSED",
+        "commit": "d3b6d26",
+        "suite": "168/168, 0 skipped",
+        "coverage": "97.5% (79/81) changed lines",
+        "note": "count rule + givens-match rule now isolated (mutation-verified)",
+        "report_url": "https://github.com/greavemr-svg/suduko-agent-test/pull/20#issuecomment-6266101606"
+      },
+      "review": {
+        "verdict": "APPROVE",
+        "head": "d3b6d26",
+        "findings": "previous 1-5 resolved; 2 Minor (FNF for existing-but-unopenable file skips log+delete vs ADR 0002; PR body wording)",
+        "posted_on_github": "2026-10-19T11:16:17Z"
+      },
+      "follow_ups": [
+        "T7: FileGameRepository FNF catch - if baseFile.exists() take invalid path (log+delete); extend AC18_unreadable_file_loads_null to assert log"
+      ],
+      "owner_decision": {
+        "decision": "Retry: tester posts report (Recommended)",
+        "verbatim": "Task 6 (save format, PR #20) has reached 3 attempts. The only blocker is that the tester's latest report isn't posted on the PR. How should I proceed?=\"Retry: tester posts report (Recommended)\"",
+        "at": "2026-10-19T11:23:44Z",
+        "by": "owner (greavemr-svg)"
+      },
+      "merged": "a7d84294"
     },
     {
       "n": 7,
@@ -277,8 +308,8 @@
         5,
         6
       ],
-      "status": "todo",
-      "attempts": 0,
+      "status": "in_progress",
+      "attempts": 1,
       "pr": null,
       "G3": null
     }
@@ -290,7 +321,7 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 49,
+    "agent_invocations": 59,
     "plan_attempts": 2,
     "design_attempts": 2,
     "invocation_cap": 80,
@@ -410,7 +441,28 @@
     "2026-10-19T10:26:57Z gatekeeper G3 T5: PASS @66902f2; GATE G3: PASS posted on PR #19",
     "2026-10-19T10:26:57Z release integrate T5 (PR #19): invoked",
     "2026-10-19T10:28:39Z release integrate T5: PR #19 squash-merged as 5533d4b into feature; issue #12 closed; feature CI 39237562076 success; T5 done",
-    "2026-10-19T10:28:39Z developer T6 attempt 1: invoked"
+    "2026-10-19T10:28:39Z developer T6 attempt 1: invoked",
+    "2026-10-19T10:47:26Z developer T6 attempt 1: DONE - PR #20 @62cf9de, kotlinx-serialization-json 1.11.0 + plugin, 156 tests (1 Windows-only Assume skip), ~98% new lines, CI green; deviations: lenient quoted primitives accepted (assertions dropped), Windows assume",
+    "2026-10-19T10:47:26Z tester T6 attempt 1: invoked",
+    "2026-10-19T10:54:21Z tester T6 attempt 1: PASSED - 755a148 (+7 tests; Windows Assume removed, test host-aware; quoted primitives judged ADR-compliant + new negative test), 163/163 0 skipped, 98.6%, CI green",
+    "2026-10-19T10:54:21Z reviewer T6 attempt 1: invoked",
+    "2026-10-19T10:57:19Z reviewer T6 attempt 1: CHANGES_REQUESTED @755a148 (Major: AtomicFile .bak read path uncapped / lost save; Major: count tests masked by uniqueness). Routing: Major1+Minors -> developer; Major2 -> tester",
+    "2026-10-19T10:57:19Z developer T6 attempt 2: invoked",
+    "2026-10-19T11:04:28Z developer T6 attempt 2: DONE - 0874f5c (bounded AtomicFile.openRead, FNF quiet null, .bak tests at sdk 26, explicit Json config, PR body fixed), 167 tests 0 skipped, ~90% changed, CI green",
+    "2026-10-19T11:04:28Z tester T6 attempt 2 (count-rule tests Major + Nit, re-test): invoked",
+    "2026-10-19T11:15:38Z tester T6 attempt 2: PASSED - 3a3f91e+d3b6d26 (unique 35/47-given fixtures, mutation-verified; givens-match rule was masked, new isolated test), 168/168, 97.5%, CI green",
+    "2026-10-19T11:15:38Z reviewer T6 attempt 2: invoked",
+    "2026-10-19T11:16:50Z reviewer T6 attempt 2: APPROVE @d3b6d26 posted 11:16:17Z (2 Minor; code Minor routed to T7)",
+    "2026-10-19T11:16:50Z gatekeeper G3 T6 (PR #20, attempt 2): invoked",
+    "2026-10-19T11:17:58Z gatekeeper G3 T6: FAIL @d3b6d26 - G3.4 tester report for d3b6d26 not evidenced on GitHub; GATE G3: FAIL posted on PR #20. attempts=3 -> escalating to owner",
+    "2026-10-19T11:23:44Z owner: T6 attempt limit -> \"Retry: tester posts report (Recommended)\"",
+    "2026-10-19T11:23:44Z tester T6 (post attempt-2 report on PR #20, owner-approved retry): invoked",
+    "2026-10-19T11:26:25Z tester T6: report posted on PR #20 for d3b6d26 (168/168, 0 skipped, 97.5%) issuecomment-6266101606",
+    "2026-10-19T11:26:25Z gatekeeper G3 T6 re-check: invoked",
+    "2026-10-19T11:27:20Z gatekeeper G3 T6 re-check: PASS @d3b6d26; GATE G3: PASS posted on PR #20",
+    "2026-10-19T11:27:20Z release integrate T6 (PR #20): invoked",
+    "2026-10-19T11:30:34Z release integrate T6: PR #20 squash-merged as a7d8429 into feature; issue #13 closed; feature CI 39244778441 success; T6 done",
+    "2026-10-19T11:30:34Z developer T7 attempt 1: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
