@@ -82,7 +82,7 @@ Option 1. Details:
 | JDK | Builds and tests must run on JDK 17 (what CI installs). Java/Kotlin bytecode target 17 |
 | Unit tests | JUnit 4, kotlinx-coroutines-test |
 | Integration tests | Robolectric + AndroidX Test (core, ext-junit) + Compose UI test (`ui-test-junit4`) running on the JVM inside `testDebugUnitTest` (see ADR 0003) |
-| Lint | Android Lint with `abortOnError = true` and `warningsAsErrors = true`, configured in `app/lint.xml`. Only checks that depend on the outside world are disabled there (`GradleDependency`, `NewerVersionAvailable`, `AndroidGradlePluginVersion`), so CI does not start failing when a library releases a new version. Plus ktlint via the `org.jlleitschuh.gradle.ktlint` Gradle plugin. The `lint` task is wired to depend on `ktlintCheck`, so the `lint` call in `scripts/ci.sh` runs both |
+| Lint | Android Lint with `abortOnError = true` and `warningsAsErrors = true`, configured in `app/lint.xml`. Only checks that depend on the outside world are disabled there (`GradleDependency`, `NewerVersionAvailable`, `AndroidGradlePluginVersion`, and `OldTargetApi`, which depends on Android SDK releases because `targetSdk` is fixed at 36 above), so CI does not start failing when a library releases a new version. Plus ktlint via the `org.jlleitschuh.gradle.ktlint` Gradle plugin. The `lint` task is wired to depend on `ktlintCheck`, so the `lint` call in `scripts/ci.sh` runs both |
 | Coverage | Kover Gradle plugin (`org.jetbrains.kotlinx.kover`), Android variant reports `koverXmlReportDebug` / `koverHtmlReportDebug`, covering JVM unit and Robolectric tests |
 | Persistence | One JSON file in app-private storage, written with the platform `android.util.AtomicFile` and encoded with kotlinx.serialization (see ADR 0002). No database |
 | Release build | R8 minify + resource shrinking on; signing config read only from environment variables / the user's `~/.gradle/gradle.properties`, never from the repo; unsigned if absent. A `benchmark` build type (`initWith(release)`, debug signing key, not debuggable) exists for on-device performance measurement |
@@ -119,6 +119,10 @@ emulator, and it costs nothing.
   Compose later would mean rewriting the UI layer only. The domain layer (rules,
   solver, generator, save validation) is plain Kotlin with no Android types and
   would survive.
+
+## Amendments
+- 2026-10-19: `OldTargetApi` added to the disabled lint checks (task 1 review
+  finding, PR #15).
 
 ## For new dependencies
 All are mainstream, actively maintained and free.

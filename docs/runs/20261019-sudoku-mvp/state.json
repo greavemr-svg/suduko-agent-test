@@ -51,7 +51,21 @@
     },
     "G4": null,
     "G5": null,
-    "release_approval": null
+    "release_approval": null,
+    "security": {
+      "result": "PASS",
+      "at": "2026-10-19T13:54:50Z",
+      "head": "212365a",
+      "summary": "Critical 0, High 0, Medium 0, Low 3, Info 3",
+      "report": "docs/runs/20261019-sudoku-mvp/security-report.md"
+    },
+    "performance": {
+      "result": "NO_BASELINE",
+      "at": "2026-10-19T13:55:05Z",
+      "head": "212365a",
+      "proposed_baseline": "docs/perf/20261019-sudoku-mvp/proposed-baseline.json",
+      "note": "tap latency not quantified; device numbers from emulator"
+    }
   },
   "tasks": [
     {
@@ -358,7 +372,7 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 72,
+    "agent_invocations": 73,
     "plan_attempts": 2,
     "design_attempts": 2,
     "invocation_cap": 80,
@@ -519,7 +533,11 @@
     "2026-10-19T13:48:45Z gatekeeper G3 T7: PASS @41e30d1; GATE G3: PASS posted on PR #21",
     "2026-10-19T13:48:45Z release integrate T7 (PR #21): invoked",
     "2026-10-19T13:52:26Z release integrate T7: PR #21 squash-merged as b255980 into feature; issue #14 closed; feature CI 39263376176 success; T7 done - all 7 tasks done",
-    "2026-10-19T13:52:26Z Stage 4: architect (ADR 0001 OldTargetApi amendment), security, performance: invoked in parallel on feature b255980"
+    "2026-10-19T13:52:26Z Stage 4: architect (ADR 0001 OldTargetApi amendment), security, performance: invoked in parallel on feature b255980",
+    "2026-10-19T13:54:50Z security: PASS @212365a - 0 Critical/High; Low: S-01 no wrapper jar/dep verification metadata, S-02 backup include path=. not save file, S-03 benchmark debug-signed; Info S-04..S-06",
+    "2026-10-19T13:54:50Z architect ADR 0001 amendment: DONE (OldTargetApi + Amendments section; diff verified 2 hunks)",
+    "2026-10-19T13:55:05Z performance: NO_BASELINE @212365a; proposed baseline recorded; first launch median 722ms, restore overhead ~100ms; tap latency unmeasured",
+    "2026-10-19T13:55:05Z gatekeeper G4: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
