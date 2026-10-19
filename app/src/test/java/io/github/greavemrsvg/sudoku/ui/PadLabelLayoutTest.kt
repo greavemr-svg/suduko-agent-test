@@ -61,6 +61,12 @@ class PadLabelLayoutTest {
     }
 
     @Test
+    fun NFR_new_game_label_has_room_for_one_line_at_360dp() {
+        val available = labelWidthDp("new_game")
+        assertTrue("New game label width $available dp < $MIN_NEW_GAME_LABEL_DP dp", available >= MIN_NEW_GAME_LABEL_DP)
+    }
+
+    @Test
     fun NFR_pad_font_scale_is_capped() {
         assertTrue(MAX_PAD_FONT_SCALE <= 1.5f)
     }
@@ -69,5 +75,6 @@ class PadLabelLayoutTest {
         /** "Erase" at the capped label size (14 sp x 1.3) needs about 50 dp. */
         const val MIN_ERASE_LABEL_DP = 50f
         const val MIN_DIGIT_LABEL_DP = 24f
+        const val MIN_NEW_GAME_LABEL_DP = 80f
     }
 }

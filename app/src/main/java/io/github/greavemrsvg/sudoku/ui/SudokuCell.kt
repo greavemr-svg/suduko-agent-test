@@ -19,12 +19,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import io.github.greavemrsvg.sudoku.R
 import io.github.greavemrsvg.sudoku.domain.BOX_SIZE
 import io.github.greavemrsvg.sudoku.domain.EMPTY
 import io.github.greavemrsvg.sudoku.ui.theme.selectedCellTint
@@ -71,6 +75,7 @@ fun SudokuCell(
             cell.isGiven -> colors.onSurface
             else -> colors.primary
         }
+    val description = cellDescription(cell)
     Box(
         modifier =
             modifier
@@ -78,7 +83,8 @@ fun SudokuCell(
                 .testTag(cellTag(cell.row, cell.column))
                 .background(background)
                 .drawBehind { drawCellBorders(cell, lineColor, boxLineColor, selectedColor) }
-                .selectable(selected = cell.isSelected, role = Role.Button, onClick = onClick),
+                .selectable(selected = cell.isSelected, role = Role.Button, onClick = onClick)
+                .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
         if (cell.digit != EMPTY) {
@@ -109,6 +115,16 @@ fun SudokuCell(
             )
         }
     }
+}
+
+/** "Row r, column c, <digit|empty>[, given][, mistake]" for screen readers. Rows and columns are 1-based. */
+@Composable
+private fun cellDescription(cell: CellUi): String {
+    val position = stringResource(R.string.cell_position, cell.row + 1, cell.column + 1)
+    val content = if (cell.digit == EMPTY) stringResource(R.string.cell_empty) else cell.digit.toString()
+    val given = if (cell.isGiven) stringResource(R.string.cell_given) else null
+    val mistake = if (cell.isMistake) stringResource(R.string.cell_mistake) else null
+    return listOfNotNull(position, content, given, mistake).joinToString(", ")
 }
 
 private fun DrawScope.drawCellBorders(

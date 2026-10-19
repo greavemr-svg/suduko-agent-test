@@ -122,4 +122,73 @@ class GameViewModelTest {
             vm.onErase()
             assertSame(GameUiState.Loading, vm.uiState.value)
         }
+
+    private fun GameViewModel.solve(puzzle: Puzzle) {
+        for (i in (0 until CELL_COUNT).filter { !puzzle.isGiven(it) }) {
+            onCellTapped(i)
+            onDigit(puzzle.solution.get(i))
+        }
+    }
+
+    @Test
+    fun AC12_solving_sets_solved_and_then_ignores_input() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        vm.solve(puzzle)
+        assertTrue(vm.ready().isSolved)
+        val before = vm.ready().cells.map { it.digit }
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        vm.onErase()
+        assertEquals(before, vm.ready().cells.map { it.digit })
+        assertTrue(vm.ready().isSolved)
+    }
+
+    @Test
+    fun AC14_new_game_replaces_puzzle_and_resets_entries_selection_and_solved() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        vm.solve(puzzle)
+        vm.onNewGame()
+        val ready = vm.ready()
+        assertFalse(ready.isSolved)
+        assertFalse(ready.isGenerating)
+        assertTrue(ready.cells.none { it.isSelected || it.isMistake })
+        assertTrue(ready.cells.all { it.isGiven == (it.digit != EMPTY) })
+        val oldGivens = (0 until CELL_COUNT).map { puzzle.givens.get(it) }
+        assertTrue(oldGivens != ready.cells.map { it.digit })
+    }
+
+    @Test
+    fun AC14_new_game_is_ignored_while_generating_and_input_waits_for_the_new_puzzle() =
+        runTest {
+            val scheduler = testScheduler
+            val vm = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), StandardTestDispatcher(scheduler))
+            scheduler.advanceUntilIdle()
+            val first = vm.ready().cells.map { it.digit }
+            val open =
+                vm
+                    .ready()
+                    .cells.indices
+                    .first { !vm.ready().cells[it].isGiven }
+            vm.onNewGame()
+            assertTrue(vm.ready().isGenerating)
+            vm.onNewGame()
+            vm.onCellTapped(open)
+            vm.onDigit(1)
+            assertEquals(first, vm.ready().cells.map { it.digit })
+            assertTrue(vm.selectedIndexes().isEmpty())
+            scheduler.advanceUntilIdle()
+            assertFalse(vm.ready().isGenerating)
+            assertTrue(first != vm.ready().cells.map { it.digit })
+        }
+
+    @Test
+    fun new_game_before_the_first_puzzle_is_ready_is_ignored() =
+        runTest {
+            val vm = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), StandardTestDispatcher(testScheduler))
+            vm.onNewGame()
+            assertSame(GameUiState.Loading, vm.uiState.value)
+        }
 }

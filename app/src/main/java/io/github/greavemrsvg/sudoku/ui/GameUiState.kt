@@ -8,6 +8,8 @@ sealed interface GameUiState {
     data class Ready(
         val cells: List<CellUi>,
         val isSolved: Boolean,
+        /** A replacement puzzle is being generated after New Game. Input is ignored meanwhile. */
+        val isGenerating: Boolean = false,
     ) : GameUiState
 }
 

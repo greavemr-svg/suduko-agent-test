@@ -43,7 +43,7 @@ class LargeFontTest {
                 val base = LocalDensity.current
                 CompositionLocalProvider(LocalDensity provides Density(base.density, fontScale = 2f)) {
                     SudokuTheme {
-                        GameScreen(GameUiState.Ready(cells, isSolved = false), {}, {}, {})
+                        GameScreen(GameUiState.Ready(cells, isSolved = false), {}, {}, {}, {})
                     }
                 }
             }
