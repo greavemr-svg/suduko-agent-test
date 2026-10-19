@@ -68,6 +68,20 @@ class SavedGameValidatorTest {
     }
 
     @Test
+    fun AC18_rejects_invalid_solution_even_when_givens_agree_with_it() {
+        // Swap two open cells of one row: the row stays valid, two columns break, givens still match.
+        val i = SaveFixtures.openCells.first { it % 9 < 8 && !puzzle.isGiven(it + 1) && solution[it] != solution[it + 1] }
+        val a = solution[i]
+        val b = solution[i + 1]
+        rejects(dto.copy(solution = solution.withChar(i, b).withChar(i + 1, a), entries = "0".repeat(CELL_COUNT)))
+    }
+
+    @Test
+    fun AC18_rejects_solution_with_a_repeated_digit_in_a_row() {
+        rejects(dto.copy(solution = solution.withChar(0, solution[1]), givens = dto.givens.withChar(0, '0')))
+    }
+
+    @Test
     fun AC18_rejects_given_that_differs_from_solution() {
         val other = if (dto.givens[givenIndex] == '1') '2' else '1'
         rejects(dto.copy(givens = dto.givens.withChar(givenIndex, other)))

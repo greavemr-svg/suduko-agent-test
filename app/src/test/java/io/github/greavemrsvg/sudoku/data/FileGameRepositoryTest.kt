@@ -9,7 +9,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assume.assumeFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -81,6 +80,26 @@ class FileGameRepositoryTest {
         }
 
     @Test
+    fun AC18_valid_save_just_over_the_size_cap_is_rejected_and_deleted() =
+        runTest {
+            val dir = temp.newFolder()
+            val valid = String(SavedGameCodec.encode(SaveFixtures.inProgress), Charsets.UTF_8)
+            saveFile(dir).writeText(valid + " ".repeat(SavedGameCodec.MAX_BYTES - valid.length + 1))
+            assertNull(repository(dir).load())
+            assertFalse(saveFile(dir).exists())
+        }
+
+    @Test
+    fun AC18_unknown_key_file_is_rejected_and_deleted() =
+        runTest {
+            val dir = temp.newFolder()
+            val valid = String(SavedGameCodec.encode(SaveFixtures.inProgress), Charsets.UTF_8)
+            saveFile(dir).writeText(valid.dropLast(1) + ",\"extra\":1}")
+            assertNull(repository(dir).load())
+            assertFalse(saveFile(dir).exists())
+        }
+
+    @Test
     fun AC18_unreadable_file_loads_null() =
         runTest {
             val dir = temp.newFolder()
@@ -111,13 +130,18 @@ class FileGameRepositoryTest {
     @Test
     fun a_second_save_replaces_the_first_single_slot() =
         runTest {
-            // Robolectric's AtomicFile cannot rename over an existing file on a Windows host.
-            assumeFalse(System.getProperty("os.name").orEmpty().startsWith("Windows"))
             val dir = temp.newFolder()
             val repo = repository(dir)
             repo.save(SaveFixtures.solved)
             repo.save(SaveFixtures.inProgress)
-            assertEquals(SaveFixtures.inProgress, repo.load())
+            val loaded = repo.load()
+            if (System.getProperty("os.name").orEmpty().startsWith("Windows")) {
+                // Robolectric's AtomicFile cannot rename over an existing file on a Windows host, so the
+                // second write fails and the first save must survive intact. Linux CI asserts replacement.
+                assertEquals(SaveFixtures.solved, loaded)
+            } else {
+                assertEquals(SaveFixtures.inProgress, loaded)
+            }
         }
 
     @Test

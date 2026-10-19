@@ -83,6 +83,47 @@ class SavedGameCodecTest {
     }
 
     @Test
+    fun AC18_quoted_primitives_that_carry_a_wrong_value_never_reach_a_valid_state() {
+        // ADR 0002 requires strict keys, not strict primitive types. The default Json coerces quoted
+        // primitives, so a wrong value stays wrong and the validator is the line of defence.
+        val valid = SaveFixtures.dto
+
+        fun viaValidator(
+            version: String,
+            solved: String,
+        ) = decode(
+            """{"version":$version,"givens":"${valid.givens}","solution":"${valid.solution}",""" +
+                """"entries":"${valid.entries}","solved":$solved}""",
+        )?.let { SavedGameValidator.validate(it) }
+
+        assertNull(viaValidator("\"2\"", "\"false\""))
+        assertNull(viaValidator("\"0\"", "false"))
+        assertNull(viaValidator("1", "\"true\""))
+        assertNull(viaValidator("\"abc\"", "false"))
+        assertNull(viaValidator("1.5", "false"))
+        assertNull(viaValidator("1", "1"))
+        assertNull(viaValidator("1", "\"yes\""))
+        assertNull(viaValidator("[1]", "false"))
+        assertNull(viaValidator("1", "{}"))
+    }
+
+    @Test
+    fun AC18_non_string_grid_values_are_rejected() {
+        val g = SaveFixtures.dto.givens
+        assertNull(decode("""{"version":1,"givens":123,"solution":"$g","entries":"$g","solved":false}"""))
+        assertNull(decode("""{"version":1,"givens":null,"solution":"$g","entries":"$g","solved":false}"""))
+        assertNull(decode("""{"version":1,"givens":["0"],"solution":"$g","entries":"$g","solved":false}"""))
+    }
+
+    @Test
+    fun AC18_size_cap_is_exactly_4_KiB() {
+        assertEquals(4096, SavedGameCodec.MAX_BYTES)
+        val base = json()
+        assertNotNull(decode(base + " ".repeat(SavedGameCodec.MAX_BYTES - base.length)))
+        assertNull(decode(base + " ".repeat(SavedGameCodec.MAX_BYTES - base.length + 1)))
+    }
+
+    @Test
     fun AC18_decode_rejects_oversize_input() {
         val padded = json() + " ".repeat(SavedGameCodec.MAX_BYTES)
         assertNull(decode(padded))
