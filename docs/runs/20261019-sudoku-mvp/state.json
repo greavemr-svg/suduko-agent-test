@@ -2,7 +2,7 @@
   "run_id": "20261019-sudoku-mvp",
   "idea": "A simple Android Sudoku app: generate a new easy puzzle, let the player fill in cells, and highlight mistakes.",
   "status": "in_progress",
-  "stage": "feature_verification",
+  "stage": "release_prep",
   "bootstrap": true,
   "created_at": "2026-10-19T05:35:53Z",
   "epic_issue": 5,
@@ -49,7 +49,22 @@
       "at": "2026-10-19T07:00:45Z",
       "by": "owner (greavemr-svg)"
     },
-    "G4": null,
+    "G4": {
+      "result": "PASS",
+      "at": "2026-10-19T13:58:20Z",
+      "head": "3468f62",
+      "blocking": [],
+      "carried": [
+        "S-01 Low no wrapper/dep verification metadata",
+        "S-02 Low backup includes whole file domain",
+        "S-03 Low benchmark debug-signed",
+        "follow-up TouchTargetTest boundsInRoot",
+        "NOT RUN: Accessibility Scanner, GPU bars, TalkBack audio (substitutes accepted at T7 G3)",
+        "tap latency 100ms not quantified; device perf from emulator",
+        "perf baseline proposed only - owner promotes via governance/* PR",
+        "governance flag: T7 tester heredoc writes after Write blocked"
+      ]
+    },
     "G5": null,
     "release_approval": null,
     "security": {
@@ -372,7 +387,7 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 73,
+    "agent_invocations": 74,
     "plan_attempts": 2,
     "design_attempts": 2,
     "invocation_cap": 80,
@@ -537,7 +552,9 @@
     "2026-10-19T13:54:50Z security: PASS @212365a - 0 Critical/High; Low: S-01 no wrapper jar/dep verification metadata, S-02 backup include path=. not save file, S-03 benchmark debug-signed; Info S-04..S-06",
     "2026-10-19T13:54:50Z architect ADR 0001 amendment: DONE (OldTargetApi + Amendments section; diff verified 2 hunks)",
     "2026-10-19T13:55:05Z performance: NO_BASELINE @212365a; proposed baseline recorded; first launch median 722ms, restore overhead ~100ms; tap latency unmeasured",
-    "2026-10-19T13:55:05Z gatekeeper G4: invoked"
+    "2026-10-19T13:55:05Z gatekeeper G4: invoked",
+    "2026-10-19T13:58:20Z gatekeeper G4: PASS @3468f62 (all 23 ACs traced; carried items recorded). Note: G4 carried-list item about GameSaverProductionWiringTest Windows skip is stale - resolved in 41e30d1",
+    "2026-10-19T13:58:20Z release prepare: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
@@ -548,7 +565,7 @@
   },
   "governance_flags": [
     "2026-10-19T12:24:26Z T7 tester: Write tool to temp files outside repo blocked by hook; tester wrote scratch solver script + report body via Bash heredoc instead (possible hook circumvention) - for owner/auditor",
-    "T7: 2 host-conditional skips (Windows assumeFalse) in GameSaverProductionWiringTest - G3.6 judgement needed"
+    "T7: 2 host-conditional skips (Windows assumeFalse) - RESOLVED in 41e30d1 (no skips on any host; 188/188 0 skipped)"
   ],
   "release_carry": [
     "Accessibility Scanner NOT RUN (uiautomator bounds substituted) - deviation",
