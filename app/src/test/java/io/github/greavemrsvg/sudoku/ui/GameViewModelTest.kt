@@ -185,6 +185,34 @@ class GameViewModelTest {
         }
 
     @Test
+    fun AC14_new_game_in_progress_clears_entries_mistake_and_selection() {
+        val puzzle = puzzle()
+        val vm = viewModel()
+        val open = puzzle.firstOpenIndex()
+        vm.onCellTapped(open)
+        vm.onDigit(puzzle.wrongDigitAt(open))
+        assertTrue(vm.ready().cells.any { it.isMistake })
+        vm.onNewGame()
+        val ready = vm.ready()
+        assertTrue(ready.cells.none { it.isMistake || it.isSelected })
+        assertTrue(ready.cells.all { it.isGiven == (it.digit != EMPTY) })
+        assertFalse(ready.isSolved)
+        assertTrue((0 until CELL_COUNT).map { puzzle.givens.get(it) } != ready.cells.map { it.digit })
+    }
+
+    @Test
+    fun AC14_repeated_new_games_each_differ_from_the_previous_puzzle() {
+        val vm = viewModel()
+        var previous = vm.ready().cells.map { it.digit }
+        repeat(5) {
+            vm.onNewGame()
+            val next = vm.ready().cells.map { it.digit }
+            assertTrue(previous != next)
+            previous = next
+        }
+    }
+
+    @Test
     fun new_game_before_the_first_puzzle_is_ready_is_ignored() =
         runTest {
             val vm = GameViewModel(PuzzleGenerator(Random(seed), SudokuSolver()), StandardTestDispatcher(testScheduler))

@@ -60,6 +60,14 @@ class AccessibilityTest {
     }
 
     @Test
+    fun AC21_erased_cell_is_announced_as_empty_again() {
+        cell(open).performClick()
+        composeRule.onNodeWithTag("digit_${puzzle.solution.get(open)}").performClick()
+        composeRule.onNodeWithTag("erase").performClick()
+        cell(open).assertContentDescriptionEquals("${position(open)}, empty")
+    }
+
+    @Test
     fun AC21_digit_buttons_erase_and_new_game_are_announced_by_name() {
         for (digit in 1..GRID_SIZE) {
             composeRule.onNodeWithContentDescription("Digit $digit").assertExists()
