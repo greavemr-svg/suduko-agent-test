@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Sudoku</string>
+    <string name="digit_button">Digit %1$d</string>
+    <string name="erase">Erase</string>
 </resources>

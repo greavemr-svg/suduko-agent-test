@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark window background at startup, so dark mode does not flash light before Compose draws. -->
+    <style name="Theme.Sudoku" parent="android:Theme.Material.NoActionBar" />
+</resources>
