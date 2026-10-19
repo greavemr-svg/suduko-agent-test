@@ -99,6 +99,108 @@ class GameRulesTest {
     }
 
     @Test
+    fun AC7_replacing_a_wrong_digit_with_another_wrong_digit_keeps_it_a_mistake_and_replaces_it() {
+        val a = wrong(OPEN)
+        val b = (a % 9) + 1 // a different digit
+        val first = enter(fresh(), OPEN, a)
+        val second = GameRules.enterDigit(first, b)
+        assertEquals(b, second.digitAt(OPEN))
+        assertEquals(b != solution.get(OPEN), second.isMistake(OPEN))
+    }
+
+    @Test
+    fun AC7_replacing_a_digit_only_changes_the_selected_cell() {
+        val base = enter(enter(fresh(), 3, 5), OPEN, 4)
+        val after = GameRules.enterDigit(base, 7)
+        for (i in 0 until CELL_COUNT) {
+            if (i != OPEN) assertEquals(base.digitAt(i), after.digitAt(i))
+        }
+        assertEquals(7, after.digitAt(OPEN))
+    }
+
+    @Test
+    fun AC8_every_given_cell_rejects_digits_and_erase() {
+        for (g in 0 until CELL_COUNT) {
+            if (!puzzle.isGiven(g)) continue
+            val s = GameRules.select(fresh(), g)
+            for (d in 1..9) assertEquals(s, GameRules.enterDigit(s, d))
+            assertEquals(s, GameRules.erase(s))
+            assertEquals(solution.get(g), s.digitAt(g))
+        }
+    }
+
+    @Test
+    fun AC8_selecting_a_given_after_an_open_cell_does_not_edit_the_open_cell() {
+        val base = enter(fresh(), OPEN, 4)
+        val onGiven = GameRules.select(base, GIVEN)
+        val after = GameRules.erase(GameRules.enterDigit(onGiven, 9))
+        assertEquals(4, after.digitAt(OPEN))
+        assertEquals(base.entries, after.entries)
+    }
+
+    @Test
+    fun AC10_mistake_flag_is_independent_per_cell_when_one_is_corrected() {
+        val third = 3
+        var s = enter(fresh(), OPEN, wrong(OPEN))
+        s = enter(s, third, wrong(third))
+        s = GameRules.enterDigit(GameRules.select(s, OPEN), solution.get(OPEN))
+        assertFalse(s.isMistake(OPEN))
+        assertTrue(s.isMistake(third))
+    }
+
+    @Test
+    fun AC10_every_wrong_digit_is_a_mistake_and_only_the_solution_digit_is_not() {
+        for (d in 1..9) {
+            val s = enter(fresh(), OPEN, d)
+            assertEquals(d != solution.get(OPEN), s.isMistake(OPEN))
+        }
+    }
+
+    @Test
+    fun AC13_all_mistaken_cells_are_flagged_when_the_board_is_full() {
+        val wrongCells = setOf(1, 5, 79)
+        var s = fresh()
+        for (i in 0 until CELL_COUNT) {
+            if (!puzzle.isGiven(i)) s = enter(s, i, if (i in wrongCells) wrong(i) else solution.get(i))
+        }
+        assertTrue(s.isFull)
+        assertFalse(s.isSolved)
+        for (i in 0 until CELL_COUNT) assertEquals(i in wrongCells, s.isMistake(i))
+    }
+
+    @Test
+    fun AC13_full_board_with_a_mistake_still_accepts_digit_entry_and_selection() {
+        var s = fresh()
+        for (i in 0 until CELL_COUNT) {
+            if (!puzzle.isGiven(i)) s = enter(s, i, if (i == OPEN) wrong(i) else solution.get(i))
+        }
+        val other = enter(s, 3, wrong(3))
+        assertEquals(wrong(3), other.digitAt(3))
+        assertTrue(other.isMistake(3))
+        assertFalse(other.isSolved)
+        assertEquals(5, GameRules.select(s, 5).selected)
+    }
+
+    @Test
+    fun solved_is_false_for_an_empty_board_and_a_board_missing_one_cell() {
+        assertFalse(fresh().isSolved)
+        val almost = GameRules.erase(GameRules.select(fillAllCorrect(), OPEN))
+        // solved board is read-only, so build the almost-solved board directly
+        assertTrue(almost.isSolved)
+        var s = fresh()
+        for (i in 0 until CELL_COUNT) if (!puzzle.isGiven(i) && i != OPEN) s = enter(s, i, solution.get(i))
+        assertFalse(s.isSolved)
+        assertFalse(s.isFull)
+        assertTrue(enter(s, OPEN, solution.get(OPEN)).isSolved)
+    }
+
+    @Test
+    fun select_does_not_change_entries() {
+        val base = enter(fresh(), OPEN, 4)
+        assertEquals(base.entries, GameRules.select(base, 7).entries)
+    }
+
+    @Test
     fun erase_clears_an_entry() {
         val s = GameRules.erase(enter(fresh(), OPEN, 5))
         assertEquals(EMPTY, s.digitAt(OPEN))
