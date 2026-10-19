@@ -60,10 +60,35 @@
       "issue": 8,
       "branch": "task/20261019-sudoku-mvp-1-walking-skeleton",
       "deps": [],
-      "status": "todo",
-      "attempts": 0,
-      "pr": null,
-      "G3": null
+      "status": "done",
+      "attempts": 1,
+      "pr": 15,
+      "G3": {
+        "result": "PASS",
+        "at": "2026-10-19T07:33:39Z",
+        "head": "31fd06f",
+        "posted_on_pr": true
+      },
+      "tester": {
+        "status": "PASSED",
+        "commit": "31fd06f",
+        "suite": "5/5",
+        "coverage": "94% (34/36) changed Kotlin lines"
+      },
+      "review": {
+        "verdict": "APPROVE",
+        "head": "31fd06f",
+        "findings": "0 Blocker, 0 Major, 3 Minor, 4 Nit",
+        "posted_on_github": "2026-10-19T07:32:17Z"
+      },
+      "follow_ups": [
+        "architect: ADR 0001 amendment listing OldTargetApi as disabled lint check",
+        "developer: data_extraction_rules.xml include domain=file in cloud-backup/device-transfer",
+        "developer: fail build on partial SUDOKU_* signing env",
+        "developer (T4): DayNight window theme",
+        "nits: wrapper jar 9.8.0 vs 9.8.1, WalkingSkeletonTest FQN/!!, .editorconfig bat crlf"
+      ],
+      "merged": "73544515"
     },
     {
       "n": 2,
@@ -73,8 +98,8 @@
       "deps": [
         1
       ],
-      "status": "todo",
-      "attempts": 0,
+      "status": "in_progress",
+      "attempts": 1,
       "pr": null,
       "G3": null
     },
@@ -154,7 +179,7 @@
     "url": ""
   },
   "counters": {
-    "agent_invocations": 12,
+    "agent_invocations": 19,
     "plan_attempts": 2,
     "design_attempts": 2
   },
@@ -191,7 +216,22 @@
     "2026-10-19T07:00:45Z owner: stack checkpoint APPROVED (\"Approve stack\")",
     "2026-10-19T07:00:45Z architect attempt 3 (set project.md Status APPROVED, ADR 0001 owner approval): invoked",
     "2026-10-19T07:02:25Z architect: DONE - project.md Status APPROVED, ADR 0001 status updated; design header lines 7,10,345-346 still describe approval as pending (informational only, left unchanged)",
-    "2026-10-19T07:03:02Z orchestrator: created task issues #8-#14 (T1-T7); committing design, ADRs, project.md (APPROVED)"
+    "2026-10-19T07:03:02Z orchestrator: created task issues #8-#14 (T1-T7); committing design, ADRs, project.md (APPROVED)",
+    "2026-10-19T07:03:51Z owner: README.md uncommitted title change -> \"Developer may include it\" (in T1)",
+    "2026-10-19T07:03:51Z developer T1 attempt 1: invoked",
+    "2026-10-19T07:23:00Z developer T1 attempt 1: DONE - PR #15 (1a392c9), local build/lint/tests(3)/coverage pass, CI build-test+governance pass; deviations: lint.xml ignores OldTargetApi (not in ADR 0001), BOM 2026.04.01 for compileSdk 36",
+    "2026-10-19T07:23:00Z tester T1 attempt 1: invoked",
+    "2026-10-19T07:27:16Z tester T1 attempt 1: PASSED - 31fd06f, 5/5 tests, changed-lines coverage 94%, CI green",
+    "2026-10-19T07:27:16Z reviewer T1 attempt 1: invoked",
+    "2026-10-19T07:31:27Z reviewer T1 attempt 1: APPROVE @31fd06f (3 Minor: OldTargetApi not in ADR 0001, data_extraction_rules scope, partial signing env silent; 4 Nit). Could NOT post review on GitHub: readonly hook blocked body containing \">\". Orchestrator will not post on reviewer behalf.",
+    "2026-10-19T07:31:27Z reviewer T1 (post verdict to GitHub, no \">\" chars): invoked",
+    "2026-10-19T07:32:35Z reviewer T1: verdict APPROVE @31fd06f posted on PR #15 as COMMENT review 2026-10-19T07:32:17Z",
+    "2026-10-19T07:32:35Z gatekeeper G3 T1 (PR #15): invoked",
+    "2026-10-19T07:33:39Z gatekeeper G3 T1: PASS @31fd06f; GATE G3: PASS comment posted on PR #15",
+    "2026-10-19T07:33:39Z release integrate T1 (PR #15): invoked",
+    "2026-10-19T07:34:25Z release integrate T1: PR #15 squash-merged as 7354451 into feature; issue #8 closed; T1 done",
+    "2026-10-19T07:36:40Z orchestrator: feature CI run 39216812242 on 7354451 SUCCESS (earlier failure on cfc3c7e expected: project APPROVED before gradlew existed). Follow-up routing: backup-rules scope -> T6, partial-signing fail-loud -> T7, DayNight theme -> T4, ADR 0001 OldTargetApi amendment -> architect before G4",
+    "2026-10-19T07:36:40Z developer T2 attempt 1: invoked"
   ],
   "owner_answers": {
     "at": "2026-10-19T05:39:08Z",
