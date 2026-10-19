@@ -1,15 +1,15 @@
 package io.github.greavemrsvg.sudoku.ui
 
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import io.github.greavemrsvg.sudoku.ui.theme.DarkColors
+import io.github.greavemrsvg.sudoku.ui.theme.LightColors
 import io.github.greavemrsvg.sudoku.ui.theme.selectedCellTint
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Accessibility NFR: WCAG AA contrast for grid text on the cell backgrounds, in light and dark themes. */
+/** Accessibility NFR: WCAG AA contrast (app theme colours) for grid text on the cell backgrounds, in light and dark themes. */
 @Suppress("ktlint:standard:function-naming")
 class ContrastTest {
     private fun ratio(
@@ -40,8 +40,8 @@ class ContrastTest {
     }
 
     @Test
-    fun NFR_light_theme_grid_text_meets_wcag_aa_contrast() = check("light", lightColorScheme())
+    fun NFR_light_theme_grid_text_meets_wcag_aa_contrast() = check("light", LightColors)
 
     @Test
-    fun NFR_dark_theme_grid_text_meets_wcag_aa_contrast() = check("dark", darkColorScheme())
+    fun NFR_dark_theme_grid_text_meets_wcag_aa_contrast() = check("dark", DarkColors)
 }
